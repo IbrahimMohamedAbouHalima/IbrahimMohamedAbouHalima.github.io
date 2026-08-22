@@ -314,7 +314,8 @@ git add -A && git commit -m "Port design tokens into Tailwind @theme, self-host 
 ### Task 3: Content model
 
 **Files:**
-- Create: `content/projects.ts`, `content/site.ts`, `content/content.test.mjs`
+- Create: `content/projects.ts`, `content/site.ts`
+- Modify: `scripts/verify-build.mjs`
 - Read for values: `index.html:388-443` (the `data` array), `index.html:97-114` (at-a-glance), `index.html:177-202` (services), `index.html:206-257` (about), `index.html:261-272` (contact)
 
 **Interfaces:**
