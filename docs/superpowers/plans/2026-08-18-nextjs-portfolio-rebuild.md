@@ -369,47 +369,17 @@ export const site = {
 
 Fill every array and string from the source. An empty array left in place is a plan failure, not a valid state.
 
-- [ ] **Step 3: Assert on content through the built output**
+- [ ] **Step 3: Verify the content compiles and nothing regressed**
 
-Do not add a test runner or import `.ts` from Node — type stripping is version-gated and would rot. `verify-build.mjs` already runs on plain Node against the built HTML, which is a stronger check anyway: it proves the content survived static export rather than merely existing in a module.
-
-TypeScript itself covers the shape of `Project` at build time. What it cannot catch is a section left unfilled, so check the rendered copy. Add to `CHECKS`:
-
-```js
-  ['at-a-glance stats rendered', () => {
-    const html = read('index.html');
-    // labels copied from index.html:97-114 — update here if the copy changes
-    return GLANCE_LABELS.every((l) => html.includes(l));
-  }],
-  ['every service rendered', () => {
-    const html = read('index.html');
-    return SERVICE_TITLES.every((t) => html.includes(t));
-  }],
-  ['about paragraphs rendered', () =>
-    read('index.html').includes(ABOUT_FIRST_SENTENCE)],
-  ['contact email rendered', () =>
-    read('index.html').includes('ibrahim.ihab@hotmail.com')],
-```
-
-Declare the three constants at the top of `verify-build.mjs` with the actual strings taken from `index.html`:
-
-```js
-const GLANCE_LABELS = [/* labels from index.html:97-114 */];
-const SERVICE_TITLES = [/* titles from index.html:177-202 */];
-const ABOUT_FIRST_SENTENCE = '';  // first sentence from index.html:206-257
-```
-
-- [ ] **Step 4: Run the check to verify it fails**
+Do not add a test runner and do not import `.ts` from Node — type stripping is version-gated and would rot. TypeScript covers the shape of `Project` at build time; the *rendered* content gets asserted in Task 6, where components that render it first exist.
 
 ```bash
-npm run build && node scripts/verify-build.mjs
+npx tsc --noEmit && npm run build && node scripts/verify-build.mjs
 ```
 
-Expected: the four new checks FAIL — Task 3 has only written content files, and no component renders them yet. They stay red until Task 6 wires the sections in, which is correct: they are the acceptance test for the port being complete.
+Expected: no type errors, and the checks from Tasks 1-2 still PASS. This task adds no new checks — it adds no rendered output to check.
 
-Note this as expected-red when ticking the box. If they pass here, something is wrong — nothing renders this content yet.
-
-- [ ] **Step 5: Commit**
+- [ ] **Step 4: Commit**
 
 ```bash
 git add -A && git commit -m "Add typed content model with the five projects and site copy"
@@ -795,12 +765,32 @@ Note `#work`, `#services`, `#about`, `#contact` ids must survive onto the sectio
 
 - [ ] **Step 3: Extend the build check**
 
+Every section now renders, so the content assertions become meaningful here. Declare the constants at the top of `verify-build.mjs`, filling each with the actual strings from the line ranges under **Files** — not paraphrases:
+
+```js
+const GLANCE_LABELS = [/* labels from index.html:97-114 */];
+const SERVICE_TITLES = [/* titles from index.html:177-202 */];
+const ABOUT_FIRST_SENTENCE = '';  // first sentence from index.html:206-257
+```
+
+Then add to `CHECKS`:
+
 ```js
   ['nav anchor targets exist', () => {
     const html = read('index.html');
     return ['work', 'services', 'about', 'contact'].every((id) => html.includes(`id="${id}"`));
   }],
+  ['at-a-glance stats rendered', () =>
+    GLANCE_LABELS.every((l) => read('index.html').includes(l))],
+  ['every service rendered', () =>
+    SERVICE_TITLES.every((t) => read('index.html').includes(t))],
+  ['about copy rendered', () =>
+    read('index.html').includes(ABOUT_FIRST_SENTENCE)],
+  ['contact email rendered', () =>
+    read('index.html').includes('ibrahim.ihab@hotmail.com')],
 ```
+
+These are the acceptance test for the content port: they fail if any section was dropped or silently left empty.
 
 - [ ] **Step 4: Build and check**
 
