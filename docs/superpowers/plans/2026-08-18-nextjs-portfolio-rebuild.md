@@ -55,7 +55,9 @@ Confirm `app/`, `package.json`, `tsconfig.json` and `.gitignore` now exist at th
 node -p "const p=require('./package.json'); JSON.stringify({next:p.dependencies.next, react:p.dependencies.react, tw:p.devDependencies.tailwindcss||p.dependencies.tailwindcss}, null, 2)"
 ```
 
-Write the three versions into the plan's Task 1 checkbox as a comment when you tick it. If `tailwindcss` is not v4.x, stop and report — the `@theme` approach in Task 2 assumes v4's CSS-first configuration.
+Record the three versions in your task report file. Do not edit this plan document — progress is tracked in the SDD ledger, not in these checkboxes. If `tailwindcss` is not v4.x, stop and report BLOCKED: the `@theme` approach in Task 2 assumes v4's CSS-first configuration.
+
+Installed at execution time: next 16.3.2, react 19.2.8, tailwindcss 4.3.3.
 
 - [ ] **Step 4: Write `next.config.ts`**
 
