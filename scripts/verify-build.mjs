@@ -18,6 +18,13 @@ const CHECKS = [
       .filter((p) => !p.startsWith('http'))
       .every((p) => existsSync(join(OUT, p)));
   }],
+  ['accent token reaches the built CSS', () => {
+    const html = read('index.html');
+    // Next 16 with Turbopack emits the stylesheet under _next/static/chunks/,
+    // not _next/static/css/ (the older webpack convention) — match by extension.
+    const css = [...html.matchAll(/href="\/(_next\/static\/[^"]+\.css)"/g)].map((m) => m[1]);
+    return css.length > 0 && css.some((p) => read(p).includes('#ec3013'));
+  }],
 ];
 
 let failed = 0;
