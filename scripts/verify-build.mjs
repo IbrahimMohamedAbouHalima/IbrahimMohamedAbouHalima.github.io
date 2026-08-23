@@ -5,6 +5,20 @@ import { join } from 'node:path';
 const OUT = 'out';
 const read = (p) => readFileSync(join(OUT, p), 'utf8');
 
+// Verbatim from index.html:97-114, 177-202, 206 (first sentence of the first
+// about paragraph). The services title has a literal "&" in the source
+// (index.html:197 `DevOps &amp; hosting`) which React re-escapes the same
+// way when it serializes the built HTML, so the check string carries the
+// entity too — a plain "&" would never match the built markup.
+const GLANCE_LABELS = [
+  'Products shipped live',
+  'Platforms — web, iOS, Android',
+  'Mobile stacks — Flutter, React Native',
+  'Developer, front to back',
+];
+const SERVICE_TITLES = ['Full-stack web application', 'Mobile app', 'Shopify store', 'DevOps &amp; hosting'];
+const ABOUT_FIRST_SENTENCE = 'Full-stack, DevOps, mobile and Shopify developer in Kuwait.';
+
 const CHECKS = [
   ['index.html exists', () => existsSync(join(OUT, 'index.html'))],
   ['_next assets emitted', () => existsSync(join(OUT, '_next'))],
@@ -46,6 +60,18 @@ const CHECKS = [
   ['case studies are in the markup, not injected by JS', () =>
     read('index.html').includes('<details')],
   ['work counter reads 01 / 06', () => read('index.html').includes('01 / 06')],
+  ['nav anchor targets exist', () => {
+    const html = read('index.html');
+    return ['work', 'services', 'about', 'contact'].every((id) => html.includes(`id="${id}"`));
+  }],
+  ['at-a-glance stats rendered', () =>
+    GLANCE_LABELS.every((l) => read('index.html').includes(l))],
+  ['every service rendered', () =>
+    SERVICE_TITLES.every((t) => read('index.html').includes(t))],
+  ['about copy rendered', () =>
+    read('index.html').includes(ABOUT_FIRST_SENTENCE)],
+  ['contact email rendered', () =>
+    read('index.html').includes('ibrahim.ihab@hotmail.com')],
 ];
 
 let failed = 0;
