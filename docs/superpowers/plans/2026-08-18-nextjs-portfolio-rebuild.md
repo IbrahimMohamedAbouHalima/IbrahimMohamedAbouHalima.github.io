@@ -318,7 +318,7 @@ git add -A && git commit -m "Port design tokens into Tailwind @theme, self-host 
 **Files:**
 - Create: `content/projects.ts`, `content/site.ts`
 - Modify: `scripts/verify-build.mjs`
-- Read for values: `index.html:388-443` (the `data` array), `index.html:97-114` (at-a-glance), `index.html:177-202` (services), `index.html:206-257` (about), `index.html:261-272` (contact)
+- Read for values: `index.html:382-443` (the `data` array), `index.html:97-114` (at-a-glance), `index.html:177-202` (services), `index.html:206-257` (about), `index.html:261-272` (contact)
 
 **Interfaces:**
 - Consumes: nothing.
@@ -326,7 +326,7 @@ git add -A && git commit -m "Port design tokens into Tailwind @theme, self-host 
 
 - [ ] **Step 1: Write `content/projects.ts`**
 
-Copy all five records verbatim from the `data` array at `index.html:388-443`. Do not reword, retitle, or "improve" any copy. `image` is `null` for every project — no screenshots exist yet.
+Copy all six records verbatim from the `data` array at `index.html:382-443`. Do not reword, retitle, or "improve" any copy. `image` is `null` for every project — no screenshots exist yet.
 
 ```ts
 export type Project = {
@@ -342,7 +342,7 @@ export type Project = {
 };
 
 export const projects: Project[] = [
-  // ... five records copied from index.html:388-443, each with image: null
+  // ... six records copied from index.html:382-443, each with image: null
 ];
 ```
 
@@ -384,7 +384,7 @@ Expected: no type errors, and the checks from Tasks 1-2 still PASS. This task ad
 - [ ] **Step 4: Commit**
 
 ```bash
-git add -A && git commit -m "Add typed content model with the five projects and site copy"
+git add -A && git commit -m "Add typed content model with the six projects and site copy"
 ```
 
 ---
@@ -600,7 +600,7 @@ git add -A && git commit -m "Port hero and nav with CSS scroll-driven motion"
 **Two intentional deviations from the old behaviour — both approved in the spec:**
 
 1. The 500vh section that translated a track horizontally as you scrolled *vertically* is replaced by a natively scrollable track with `scroll-snap`. The page gets much shorter and the track becomes keyboard- and touch-operable.
-2. The old counter rendered `01 / 06` for five projects — `Math.min(6, ...)` and a hardcoded `"/ 06"` against a five-item array. That is a bug. The new counter derives from `projects.length`, so it reads `/ 05`.
+2. The counter reads `01 / 06` because there are **six** projects. An earlier revision of this plan called that a bug, having mis-read the data array's start line and counted only five. It is not a bug — `Math.min(6, ...)` and `"/ 06"` are both correct. Derive the counter from `projects.length` anyway, so it stays correct when a project is added or removed, but the rendered output must still read `/ 06` today. If it renders `/ 05`, a project has been dropped.
 
 - [ ] **Step 1: Write `components/work.module.css`**
 
@@ -679,7 +679,7 @@ Port headings and the counter from `index.html:119-135`. Counter text is `` `01 
 ```js
   ['every project renders into the static HTML', () => {
     const html = read('index.html');
-    return ['Givitude', 'Mubaader', 'Mubaader Realtor', 'Theqa Invest', 'Hamoo']
+    return ['Masarra', 'Givitude', 'Mubaader', 'Mubaader Realtor', 'Theqa Invest', 'Hamoo']
       .every((t) => html.includes(t));
   }],
   ['case studies are in the markup, not injected by JS', () =>

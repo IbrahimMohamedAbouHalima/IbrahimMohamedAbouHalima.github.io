@@ -19,7 +19,7 @@ The site is committed and GitHub Pages ready (`index.html`, `resume.html`,
 
 Two costs, in order of what actually matters:
 
-1. **The maintainer writes Next.js, not `x-dc`.** Three of the five projects on
+1. **The maintainer writes Next.js, not `x-dc`.** Three of the six projects on
    this very site are Next.js builds. Every edit to the portfolio currently
    means relearning a bespoke runtime with no documentation outside its own
    source.
@@ -115,7 +115,7 @@ export type Project = {
 };
 ```
 
-The five existing records (Givitude, Mubaader, Mubaader Realtor, Theqa Invest,
+The six existing records (Masarra, Givitude, Mubaader, Mubaader Realtor, Theqa Invest,
 Hamoo) port verbatim from the `data` array in `index.html`. The derived fields
 computed at render time in the current code — `num` (zero-padded index), `open`,
 `closed`, `toggle`, `toggleLabel`, `slotId`, `slotHint` — are not stored. `num`
@@ -180,7 +180,7 @@ Slots become files under `public/images/`, referenced by path in
 `.webp` files during implementation — they are already WebP at 1200px max, so
 this is a decode-and-save, not a re-encode.
 
-The five project slots are currently empty. Their placeholder is an explicit
+The six project slots are currently empty. Their placeholder is an explicit
 component state, not a missing image: a `--color-surface` block with the
 project's domain in `--color-neutral-600`, sized to the same aspect ratio as a
 real screenshot, so layout does not shift when one is added. A project with
