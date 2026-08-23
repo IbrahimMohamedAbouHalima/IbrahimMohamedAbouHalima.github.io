@@ -1,0 +1,409 @@
+/* Hero motion — ported from the old JS (index.html:339-375) to CSS.
+   No scroll listener, no rAF, no ResizeObserver: everything below is driven
+   by one named view-progress timeline.
+
+   ── the timeline ────────────────────────────────────────────────────────
+   The old JS measured progress as
+
+       travel = stage.offsetHeight - innerHeight      (= 300svh - 100svh)
+       p      = clamp01(-stage.getBoundingClientRect().top / travel)
+
+   i.e. 0 when the stage's top edge meets the viewport's top edge, 1 when its
+   bottom edge meets the viewport's bottom edge. That is exactly a *view*
+   progress timeline's `contain` range for a subject taller than the
+   scrollport, so `view-timeline` + `animation-range: contain 0% contain 100%`
+   reproduces it byte for byte.
+
+   `animation-timeline: scroll()` would NOT: `scroll()` resolves against the
+   nearest scroll container — here the document — so progress would be
+   measured over the whole page height, and the monitor would only finish
+   zooming at the bottom of the last section.
+
+   `.nav` is a *preceding* sibling of `.stage`, and named-timeline lookup only
+   reaches an element's descendants and following siblings, so `body` carries
+   `timeline-scope: --hero` (app/globals.css) to widen it.
+
+   ── the zoom ────────────────────────────────────────────────────────────
+   The old JS scaled by a ratio:
+
+       w      = max(280, min(640, innerWidth*0.86, (innerHeight-210)*1.6))
+       target = min(4, max(innerWidth*1.02 / w, innerHeight*1.02 / (w/1.6)))
+       width  = w * (1 + (target - 1) * smoothstep(p))
+
+   `calc()` cannot divide a length by a length, so `target` is unexpressible.
+   Multiply it through instead — the end width is
+
+       w * min(4, max(1.02vw/w, 1.02vh*1.6/w))  ==  min(4w, max(102vw, 102svh*1.6))
+
+   all lengths, all legal. And `lerp(w, end, e)` == `w * (1 + (target-1)*e)`,
+   so plain @keyframes on `width`/`font-size` need no registered property.
+
+   `svh` rather than `vh` so a collapsing mobile URL bar cannot resize the
+   stage mid-scroll.
+
+   ── why em survives ─────────────────────────────────────────────────────
+   Every box inside the monitor is sized in `em`. `.column` owns the single
+   animated `font-size`; `.monitor` and `.stand` inherit it, so one number
+   scales the entire mockup as one object. Do not convert these to px/rem. */
+
+.stage {
+  --base-w: clamp(280px, min(86vw, (100svh - 210px) * 1.6), 640px);
+  --end-w: min(calc(var(--base-w) * 4), max(102vw, calc(102svh * 1.6)));
+
+  /* Fallback size only. `--end-w` deliberately overshoots the viewport — the
+     zoom is meant to overflow, and `.pane` clips it. But the fallback is where
+     a Firefox or reduced-motion visitor *lands*, and on a portrait phone the
+     `102svh * 1.6` term makes the screen ~3.4x the viewport width, cropping the
+     headline to "Ops.". Capping at the viewport keeps final size wherever
+     final size fits (on 1280x800 this is 1280px vs 1305.6px) and stays
+     readable where it doesn't. */
+  --fallback-w: min(var(--end-w), 100vw);
+
+  /* smoothstep, exactly: the cubic Bézier with control points (1/3, 0) and
+     (2/3, 1) has x(t) = t and y(t) = 3t² - 2t³ = t²(3 - 2t). */
+  --smoothstep: cubic-bezier(0.333333, 0, 0.666667, 1);
+
+  position: relative;
+  height: 300svh;
+  view-timeline: --hero block;
+}
+
+.pane {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg);
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to right,
+    color-mix(in srgb, var(--color-text) 14%, transparent) 0 2px,
+    transparent 2px 12.5%
+  );
+}
+
+/* ── everything that moves ─────────────────────────────────────────────── */
+
+.column,
+.monitor,
+.frame,
+.stand,
+.backdrop,
+.hint,
+.nav {
+  animation-timeline: --hero;
+  animation-range: contain 0% contain 100%;
+  animation-fill-mode: both;
+}
+
+.column {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: calc(var(--base-w) / 64);
+  animation-name: monitor-scale;
+  animation-timing-function: var(--smoothstep);
+}
+
+.monitor {
+  position: relative;
+  width: var(--base-w);
+  animation-name: monitor-zoom;
+  animation-timing-function: var(--smoothstep);
+}
+
+/* frame, stand and backdrop fade out as the monitor fills the viewport */
+.frame,
+.stand,
+.backdrop {
+  animation-name: chrome-fade;
+  animation-timing-function: linear;
+}
+
+.hint {
+  animation-name: hint-fade;
+  animation-timing-function: linear;
+}
+
+.nav {
+  animation-name: nav-in;
+  animation-timing-function: linear;
+}
+
+@keyframes monitor-zoom {
+  from { width: var(--base-w); }
+  to   { width: var(--end-w); }
+}
+
+@keyframes monitor-scale {
+  from { font-size: calc(var(--base-w) / 64); }
+  to   { font-size: calc(var(--end-w) / 64); }
+}
+
+/* original: fade = clamp01((0.9 - p) / 0.4) — flat until 50%, gone by 90% */
+@keyframes chrome-fade {
+  0%, 50% { opacity: 1; }
+  90%, 100% { opacity: 0; }
+}
+
+/* original: clamp01(1 - p * 4) — gone by 25% */
+@keyframes hint-fade {
+  0% { opacity: 1; }
+  25%, 100% { opacity: 0; }
+}
+
+/* original: show = clamp01((p - 0.93) / 0.05), pointer-events at show > 0.6 */
+@keyframes nav-in {
+  0%, 93% { opacity: 0; pointer-events: none; }
+  98%, 100% { opacity: 1; pointer-events: auto; }
+}
+
+/* ── the monitor mockup ────────────────────────────────────────────────── */
+
+.frame {
+  position: absolute;
+  top: -1.6em;
+  left: -1.6em;
+  right: -1.6em;
+  bottom: -1.6em;
+  background: var(--color-text);
+}
+
+.screen {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  background: var(--color-bg);
+  overflow: hidden;
+  padding: 1.8em 2.2em;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.screenNav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.6em;
+  padding-bottom: 1em;
+  border-bottom: 0.2em solid var(--color-divider);
+}
+
+.screenBrand {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 1em;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.screenLinks {
+  display: flex;
+  gap: 1.25em;
+  align-items: center;
+  font-size: 0.8em;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent);
+}
+
+.screenCta {
+  background: var(--color-accent);
+  color: var(--color-bg);
+  padding: 0.5em 1em;
+  font-weight: 700;
+}
+
+.screenBody {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  gap: 2.4em;
+  align-items: center;
+  padding: 1.4em 0;
+  min-height: 0;
+}
+
+.headline {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 2.7em;
+  line-height: 1.06;
+  letter-spacing: -0.02em;
+  margin: 0 0 0 -0.058em;
+}
+
+.lede {
+  font-size: 1.05em;
+  line-height: 1.62;
+  margin: 1.35em 0 0;
+}
+
+.actions {
+  display: flex;
+  gap: 0.7em;
+  margin-top: 1.6em;
+  flex-wrap: wrap;
+}
+
+.actionPrimary,
+.actionSecondary {
+  font-size: 0.85em;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.actionPrimary,
+.actionPrimary:hover {
+  background: var(--color-accent);
+  color: var(--color-bg);
+  padding: 0.7em 1.2em;
+  text-decoration: none;
+}
+
+.actionSecondary,
+.actionSecondary:hover {
+  border: 0.235em solid var(--color-text);
+  color: var(--color-text);
+  padding: 0.47em 1.2em;
+  text-decoration: none;
+}
+
+.portrait {
+  margin: 0;
+}
+
+.portrait img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  /* The old image-slot pinned the 486×486 source's centre at 56.58% of the
+     4:5 frame (.image-slots.state.json → hero-portrait.x). Cover leaves
+     0.2·H of horizontal slack, and that offset consumes 0.0474·H of it. */
+  object-position: 24% center;
+}
+
+.stand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.standNeck {
+  width: 8.4em;
+  height: 3.4em;
+  background: var(--color-text);
+  margin-top: 1.6em;
+}
+
+.standBase {
+  width: 22em;
+  height: 1.2em;
+  background: var(--color-text);
+}
+
+.hint {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 32px;
+  margin: 0;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-accent-700);
+}
+
+/* ── the nav ───────────────────────────────────────────────────────────── */
+
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  background: var(--color-bg);
+  border-bottom: 2px solid var(--color-divider);
+  padding-block: var(--space-3);
+  padding-inline: max(24px, calc((100% - 1200px) / 2 + 24px));
+  opacity: 0;
+  pointer-events: none;
+}
+
+.navBrand {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 18px;
+  margin-right: auto;
+}
+
+.navLink {
+  color: inherit;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.navLink:hover {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+.navCta,
+.navCta:hover {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 14px;
+  line-height: 1.2;
+  color: var(--color-bg);
+  border: 1px solid transparent;
+  padding: var(--space-2) calc(var(--space-3) * 1.2);
+  text-decoration: none;
+}
+
+.navCta { background: var(--color-accent); }
+.navCta:hover { background: var(--color-accent-600); }
+
+/* ── designed fallback ─────────────────────────────────────────────────── */
+/* Not an absence of animation: a normal one-screen hero with the monitor
+   already at its final size. Without this, an engine with no scroll-driven
+   animations gets three viewport-heights of nothing happening. */
+
+@supports not (animation-timeline: scroll()) {
+  .stage { height: 100svh; view-timeline: none; }
+  .column { font-size: calc(var(--fallback-w) / 64); animation-name: none; }
+  .monitor { width: var(--fallback-w); animation-name: none; }
+  .frame, .stand, .backdrop, .hint { display: none; }
+  /* At full zoom the mockup IS the site, so its mini nav is the real nav —
+     which is already on screen and fixed. Leaving both draws an orphan rule
+     and a second Résumé chip under the real one. */
+  .screenNav { display: none; }
+  .nav { opacity: 1; pointer-events: auto; animation-name: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage { height: 100svh; view-timeline: none; }
+  .column { font-size: calc(var(--fallback-w) / 64); animation-name: none; }
+  .monitor { width: var(--fallback-w); animation-name: none; }
+  .frame, .stand, .backdrop, .hint { display: none; }
+  /* At full zoom the mockup IS the site, so its mini nav is the real nav —
+     which is already on screen and fixed. Leaving both draws an orphan rule
+     and a second Résumé chip under the real one. */
+  .screenNav { display: none; }
+  .nav { opacity: 1; pointer-events: auto; animation-name: none; }
+}

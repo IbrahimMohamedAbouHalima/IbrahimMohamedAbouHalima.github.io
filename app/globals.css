@@ -66,6 +66,13 @@ body {
   background: var(--color-bg);
   color: var(--color-text);
   text-wrap: pretty;
+  /* index.html:25 set this once on the root wrapper. Without it Tailwind's
+     preflight leaves body copy on the system sans stack. */
+  font-family: var(--font-body);
+  /* `--hero` is declared on the hero stage (components/hero.module.css).
+     Named-timeline lookup only reaches an element's descendants and *following*
+     siblings; the nav precedes the stage, so widen the name to the whole body. */
+  timeline-scope: --hero;
 }
 
 h1, h2, h3, h4 {

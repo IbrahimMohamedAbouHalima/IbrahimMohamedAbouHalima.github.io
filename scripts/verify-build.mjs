@@ -16,6 +16,10 @@ const CHECKS = [
       // strip query/hash before checking the filesystem path.
       .map((m) => m[1].split(/[?#]/)[0])
       .filter((p) => !p.startsWith('http'))
+      // Assets only. Extensionless roots are page routes, not assets, and some
+      // are forward references to routes a later task adds (e.g. /resume);
+      // those get their own existence checks when they land.
+      .filter((p) => /\.[a-z0-9]+$/i.test(p))
       .every((p) => existsSync(join(OUT, p)));
   }],
   ['accent token reaches the built CSS', () => {
@@ -24,6 +28,15 @@ const CHECKS = [
     // not _next/static/css/ (the older webpack convention) — match by extension.
     const css = [...html.matchAll(/href="\/(_next\/static\/[^"]+\.css)"/g)].map((m) => m[1]);
     return css.length > 0 && css.some((p) => read(p).includes('#ec3013'));
+  }],
+  ['hero portrait ships', () => existsSync(join(OUT, 'images/hero-portrait.webp'))],
+  ['scroll-driven hero motion and its designed fallback both ship', () => {
+    const html = read('index.html');
+    const css = [...html.matchAll(/href="\/(_next\/static\/[^"]+\.css)"/g)].map((m) => m[1]);
+    return css.length > 0
+      && css.some((p) => read(p).includes('animation-timeline'))
+      && css.some((p) => read(p).includes('view-timeline'))
+      && css.some((p) => read(p).includes('@supports not'));
   }],
 ];
 
