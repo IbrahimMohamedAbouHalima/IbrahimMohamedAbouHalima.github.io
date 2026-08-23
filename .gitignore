@@ -42,3 +42,6 @@ next-env.d.ts
 
 # superpowers SDD planning workspace (local scratch, not shipped)
 /.superpowers/
+
+# browser tooling scratch
+/.playwright-mcp/
