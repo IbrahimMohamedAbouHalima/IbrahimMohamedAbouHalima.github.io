@@ -17,6 +17,18 @@ export type Project = {
 
 export const projects: Project[] = [
   {
+    title: "Masarra",
+    url: "https://masarrakw.com",
+    domain: "masarrakw.com",
+    body: "An event booking platform in Kuwait — browse events, book and pay on the web or in the app.",
+    tags: ["MERN", "React Native", "iOS + Android"],
+    product:
+      "Masarra lets people find and book events. It runs as a website and as a mobile app on both stores, sharing one backend.",
+    built: "The whole product: API and database, the booking flow, the web front end and the React Native mobile app.",
+    stack: "MongoDB, Express, React, Node.js, React Native, AWS",
+    image: null,
+  },
+  {
     title: "Givitude",
     url: "https://givitudekw.com",
     domain: "givitudekw.com",
