@@ -1,0 +1,185 @@
+/* Work track — ported from index.html:119-171.
+
+   Old behaviour: a 500vh section pinned the track with `position: sticky`
+   and translated it horizontally in a scroll handler, so cards were exactly
+   100vh tall (hence the flex/min-height:0 chain in the old inline styles).
+
+   Approved deviation: that's gone. The track is now a plain horizontally
+   scrolling grid (`scroll-snap-type: x mandatory`), so the section has
+   natural height and cards size to their own content — no flex/min-height
+   plumbing needed, no scroll listener, no ResizeObserver, no rAF.
+
+   No named view-timeline is declared here. Scroll-snap is a different CSS
+   mechanism from scroll-driven animation timelines, so this file doesn't
+   need one — and mustn't reuse `--hero` (see app/globals.css / hero.module.css). */
+
+.header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 92px max(24px, calc((100% - 1200px) / 2 + 24px)) 24px;
+}
+
+.kicker {
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-accent-700);
+}
+
+.counter {
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent);
+  font-feature-settings: 'tnum' 1;
+}
+
+.track {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: min(700px, 80vw);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  align-items: start;
+  padding: 0 max(24px, calc((100% - 1200px) / 2 + 24px)) 64px;
+  box-sizing: border-box;
+}
+
+.card {
+  scroll-snap-align: start;
+  border-left: 2px solid var(--color-divider);
+  padding: 0 40px;
+  box-sizing: border-box;
+}
+
+.titleRow {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+}
+
+.num {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 14px;
+  line-height: 24px;
+  margin: 0;
+  font-feature-settings: 'tnum' 1;
+  color: var(--color-accent);
+}
+
+.title {
+  font-size: 34px;
+  line-height: 40px;
+  letter-spacing: -0.015em;
+  margin: 0;
+}
+
+.body {
+  font-size: 15.5px;
+  line-height: 26px;
+  margin: 16px 0 0;
+  max-width: 52ch;
+  color: color-mix(in srgb, var(--color-text) 78%, transparent);
+}
+
+.tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  padding: 3px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-accent);
+  color: var(--color-accent);
+}
+
+.figure {
+  margin: 24px 0 0;
+}
+
+.image {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1200 / 750;
+  object-fit: cover;
+}
+
+/* image: null placeholder — a real designed state, not a missing asset. Same
+   aspect ratio a screenshot would occupy, so adding an image later doesn't
+   shift layout. Deliberately not `.grayscale` — that's a hero-only treatment. */
+.placeholder {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 1200 / 750;
+  background: var(--color-surface);
+  color: var(--color-neutral-600);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  text-align: center;
+  padding: 0 16px;
+  box-sizing: border-box;
+}
+
+.details {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 2px solid var(--color-divider);
+}
+
+.summary {
+  cursor: pointer;
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 14px;
+  color: var(--color-accent-700);
+  padding-block: 4px;
+}
+
+.summary:hover {
+  color: var(--color-accent);
+  text-decoration: underline;
+}
+
+.caseStudy {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-top: 16px;
+}
+
+.caseLabel {
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-accent-700);
+  margin: 0 0 8px;
+}
+
+.caseText {
+  font-size: 15px;
+  line-height: 25px;
+  margin: 0;
+  max-width: 56ch;
+  color: color-mix(in srgb, var(--color-text) 82%, transparent);
+}
+
+.link {
+  display: inline-block;
+  margin-top: 20px;
+  font-size: 14px;
+}

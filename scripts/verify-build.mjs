@@ -38,6 +38,14 @@ const CHECKS = [
       && css.some((p) => read(p).includes('view-timeline'))
       && css.some((p) => read(p).includes('@supports not'));
   }],
+  ['every project renders into the static HTML', () => {
+    const html = read('index.html');
+    return ['Masarra', 'Givitude', 'Mubaader', 'Mubaader Realtor', 'Theqa Invest', 'Hamoo']
+      .every((t) => html.includes(t));
+  }],
+  ['case studies are in the markup, not injected by JS', () =>
+    read('index.html').includes('<details')],
+  ['work counter reads 01 / 06', () => read('index.html').includes('01 / 06')],
 ];
 
 let failed = 0;
