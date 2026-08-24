@@ -39,7 +39,7 @@ export default function About() {
             return (
               <a
                 key={link.href}
-                className="inline-flex items-center justify-center gap-1.5 border border-transparent px-1 py-2 font-heading font-extrabold text-sm leading-[1.2] text-accent"
+                className="inline-flex items-center justify-center gap-1.5 border border-transparent px-1 py-2 font-heading font-extrabold text-sm leading-[1.2] text-accent hover:bg-[color-mix(in_srgb,var(--color-accent)_10%,transparent)] active:bg-[color-mix(in_srgb,var(--color-accent)_18%,transparent)]"
                 href={link.href}
                 target={external ? '_blank' : undefined}
                 rel={external ? 'noopener' : undefined}

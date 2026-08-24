@@ -191,18 +191,9 @@
   color: color-mix(in srgb, var(--color-text) 82%, transparent);
 }
 
-/* .btn + .btn-ghost combined (_ds/modernist.../styles.css:114-134), rebuilt
-   from tokens already in app/globals.css — no retyped hex, no new button
-   component (this is the only ghost button in the app). --radius-md is 0px
-   by design-system rule, so this stays flat like every other corner.
-   justify-content is pinned to flex-start (never .btn's default `center`)
-   per the design system's rule: a button wider than its label starts text at
-   the left padding edge. It's a no-op at this fixed content width, but keeps
-   the rule true if this ever sits in a stretched container. */
 .link {
   display: inline-flex;
   align-items: center;
-  justify-content: flex-start;
   font-family: var(--font-heading);
   font-weight: var(--font-heading-weight);
   font-size: 14px;

@@ -7,6 +7,12 @@ import About from '@/components/About';
 import Contact from '@/components/Contact';
 import { site } from '@/content/site';
 
+// 2px divider bar at section joints (index.html:95, 116, 175, 204) — same
+// treatment as app/resume/page.tsx's local Divider.
+function Divider() {
+  return <hr className="m-0 [border-top:2px_solid_var(--color-divider)]" />;
+}
+
 // WorkTrack is deliberately NOT nested inside the max-w-[1200px] wrapper
 // below: its own CSS (work.module.css) centers its content via
 // `max(24px, calc((100% - 1200px) / 2 + 24px))` padding, which assumes its
@@ -20,11 +26,15 @@ export default function Home() {
       <Hero />
       <main>
         <div className="mx-auto w-full max-w-[1200px] px-6">
+          <Divider />
           <Glance />
+          <Divider />
         </div>
         <WorkTrack />
         <div className="mx-auto w-full max-w-[1200px] px-6">
+          <Divider />
           <Services />
+          <Divider />
           <About />
         </div>
       </main>

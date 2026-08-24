@@ -64,9 +64,13 @@ const CHECKS = [
   ['scroll-driven hero motion and its designed fallback both ship', () => {
     const html = read('index.html');
     const css = [...html.matchAll(/href="\/(_next\/static\/[^"]+\.css)"/g)].map((m) => m[1]);
+    // Match the timeline NAME (--hero), not just the property — the fallback
+    // block right below also declares `view-timeline: none`, so a bare
+    // `.includes('view-timeline')` would still pass with the real animation
+    // deleted entirely.
     return css.length > 0
-      && css.some((p) => read(p).includes('animation-timeline'))
-      && css.some((p) => read(p).includes('view-timeline'))
+      && css.some((p) => read(p).includes('animation-timeline:--hero'))
+      && css.some((p) => read(p).includes('view-timeline:--hero'))
       && css.some((p) => read(p).includes('@supports not'));
   }],
   ['every project renders into the static HTML', () => {

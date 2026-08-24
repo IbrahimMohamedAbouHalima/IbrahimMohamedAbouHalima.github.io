@@ -23,7 +23,7 @@ export default function Contact() {
           {links.map((link) => (
             <a
               key={link.href}
-              className="inline-flex items-center justify-center gap-1.5 border px-1 py-2 font-heading font-extrabold text-sm leading-[1.2]"
+              className="inline-flex items-center justify-center gap-1.5 border px-1 py-2 font-heading font-extrabold text-sm leading-[1.2] hover:bg-[color-mix(in_srgb,var(--color-accent)_10%,transparent)] active:bg-[color-mix(in_srgb,var(--color-accent)_18%,transparent)]"
               style={{ color: 'var(--color-bg)', borderColor: 'var(--color-bg)' }}
               href={link.href}
               target={link.external ? '_blank' : undefined}
