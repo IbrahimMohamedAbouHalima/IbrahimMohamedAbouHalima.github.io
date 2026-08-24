@@ -80,7 +80,14 @@ function Divider() {
 
 export default function ResumePage() {
   return (
-    <main className="mx-auto flex w-full max-w-[820px] flex-col gap-[20px] px-6 py-14">
+    // resume.html:22 sets `padding: 0.6in 0.7in` on the document body — the
+    // "paper" margins doc-page.js used to draw a rounded/shadowed card
+    // around. That chrome doesn't come back (design system: no rounded
+    // corners, ever), just the margins. 0.7in each side leaves ~240px of
+    // content below Tailwind's `sm` (640px) breakpoint, which clips the
+    // "Selected projects" two-column grid's longer titles — px-6 there
+    // matches the pre-fix padding this page already shipped with.
+    <main className="mx-auto flex w-full max-w-[820px] flex-col gap-[20px] px-6 py-[0.6in] sm:px-[0.7in]">
       <header>
         <h1 className="-ml-[0.058em] text-[40px] leading-[1.06] tracking-[-0.02em]">{site.hero.name}</h1>
         <p className="mt-[10px] text-[12.5px] leading-[20px] tracking-[0.06em] uppercase text-accent-700">

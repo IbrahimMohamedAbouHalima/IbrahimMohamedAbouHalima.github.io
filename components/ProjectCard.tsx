@@ -39,27 +39,33 @@ export default function ProjectCard({ project, index }: { project: Project; inde
         )}
       </figure>
 
-      <details className={styles.details}>
-        <summary className={styles.summary}>Case study</summary>
-        <div className={styles.caseStudy}>
-          <div>
-            <p className={styles.caseLabel}>The product</p>
-            <p className={styles.caseText}>{project.product}</p>
+      <div className={styles.actions}>
+        <details>
+          <summary className={styles.summary}>Case study</summary>
+          <div className={styles.caseStudy}>
+            <div>
+              <p className={styles.caseLabel}>The product</p>
+              <p className={styles.caseText}>{project.product}</p>
+            </div>
+            <div>
+              <p className={styles.caseLabel}>What I built</p>
+              <p className={styles.caseText}>{project.built}</p>
+            </div>
+            <div>
+              <p className={styles.caseLabel}>Stack</p>
+              <p className={styles.caseText}>{project.stack}</p>
+            </div>
           </div>
-          <div>
-            <p className={styles.caseLabel}>What I built</p>
-            <p className={styles.caseText}>{project.built}</p>
-          </div>
-          <div>
-            <p className={styles.caseLabel}>Stack</p>
-            <p className={styles.caseText}>{project.stack}</p>
-          </div>
-        </div>
-      </details>
+        </details>
 
-      <a className={styles.link} href={project.url} target="_blank" rel="noopener noreferrer">
-        {project.domain}
-      </a>
+        {/* Old site: sibling .btn.btn-ghost buttons beside each other
+           (index.html:163-166). Kept as a sibling of <details>, not nested in
+           <summary>, so this stays a single interactive control per element —
+           nesting an <a> inside <summary> would double as a toggle too. */}
+        <a className={styles.link} href={project.url} target="_blank" rel="noopener noreferrer">
+          {project.domain}
+        </a>
+      </div>
     </article>
   );
 }

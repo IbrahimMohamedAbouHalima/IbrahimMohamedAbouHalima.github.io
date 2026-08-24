@@ -14,7 +14,7 @@ export default function WorkTrack() {
         <span className={styles.counter}>{`01 / ${String(projects.length).padStart(2, '0')}`}</span>
       </div>
 
-      <div className={styles.track} tabIndex={0}>
+      <div className={styles.track} tabIndex={0} aria-label="Selected work">
         {projects.map((project, index) => (
           <ProjectCard key={project.domain} project={project} index={index} />
         ))}
