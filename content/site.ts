@@ -63,7 +63,7 @@ export const site = {
     ] as string[],
     links: [
       { label: "GitHub", href: "https://github.com/IbrahimMohamedAbouHalima" },
-      { label: "Download résumé", href: "resume.html" },
+      { label: "Download résumé", href: "/resume" },
     ] as { label: string; href: string }[],
     skills: [
       "React",

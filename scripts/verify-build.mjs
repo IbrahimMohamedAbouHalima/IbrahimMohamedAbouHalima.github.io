@@ -1,9 +1,22 @@
 // Asserts on the built `out/` directory. Run after `npm run build`.
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 
 const OUT = 'out';
 const read = (p) => readFileSync(join(OUT, p), 'utf8');
+
+// A root-relative path resolves as a file directly (assets: _next/static/*,
+// images/*, favicon.ico) or, for an extensionless route link, as a directory
+// carrying its own index.html (trailingSlash: true in next.config.ts, e.g.
+// /resume -> out/resume/index.html). Next leaves a directory with internal
+// RSC-artifact files (__next._full.txt etc.) at that path even when the real
+// page is missing, so a bare existsSync on the directory itself isn't enough
+// evidence — check for the index.html specifically once it's a directory.
+const resolves = (p) => {
+  const full = join(OUT, p);
+  if (!existsSync(full)) return false;
+  return statSync(full).isDirectory() ? existsSync(join(full, 'index.html')) : true;
+};
 
 // Verbatim from index.html:97-114, 177-202, 206 (first sentence of the first
 // about paragraph). The services title has a literal "&" in the source
@@ -19,6 +32,13 @@ const GLANCE_LABELS = [
 const SERVICE_TITLES = ['Full-stack web application', 'Mobile app', 'Shopify store', 'DevOps &amp; hosting'];
 const ABOUT_FIRST_SENTENCE = 'Full-stack, DevOps, mobile and Shopify developer in Kuwait.';
 
+// Named exceptions for the asset-path check below, by exact path (post
+// query-strip). Empty today — nothing in the current build needs one — but
+// this is where a genuine one-off exception gets named precisely, instead of
+// the blanket extension filter this replaced, which silently skipped every
+// route link (including the not-yet-existing /resume) along with it.
+const ASSET_SKIP = new Set();
+
 const CHECKS = [
   ['index.html exists', () => existsSync(join(OUT, 'index.html'))],
   ['_next assets emitted', () => existsSync(join(OUT, '_next'))],
@@ -30,11 +50,8 @@ const CHECKS = [
       // strip query/hash before checking the filesystem path.
       .map((m) => m[1].split(/[?#]/)[0])
       .filter((p) => !p.startsWith('http'))
-      // Assets only. Extensionless roots are page routes, not assets, and some
-      // are forward references to routes a later task adds (e.g. /resume);
-      // those get their own existence checks when they land.
-      .filter((p) => /\.[a-z0-9]+$/i.test(p))
-      .every((p) => existsSync(join(OUT, p)));
+      .filter((p) => !ASSET_SKIP.has(p))
+      .every(resolves);
   }],
   ['accent token reaches the built CSS', () => {
     const html = read('index.html');
@@ -72,6 +89,7 @@ const CHECKS = [
     read('index.html').includes(ABOUT_FIRST_SENTENCE)],
   ['contact email rendered', () =>
     read('index.html').includes('ibrahim.ihab@hotmail.com')],
+  ['resume route is exported', () => existsSync(join(OUT, 'resume/index.html'))],
 ];
 
 let failed = 0;
