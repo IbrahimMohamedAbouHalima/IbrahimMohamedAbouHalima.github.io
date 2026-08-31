@@ -58,7 +58,7 @@ export const site = {
   about: {
     heading: "Ibrahim Abou Halima",
     paragraphs: [
-      "Full-stack, DevOps, mobile and Shopify developer in Kuwait. I've built and shipped six live products — an event booking platform, a gifting app, real estate and investment sites, and a retail store — handling the web, the mobile apps and the infrastructure myself.",
+      "Full-stack, DevOps, mobile and Shopify developer in Kuwait. I've built and shipped fourteen live products — among them an event booking platform, a gifting app, real estate and investment sites, and a retail store — handling the web, the mobile apps and the infrastructure myself.",
       "Full-stack developer at Mubaader Services since March 2025, with a BSc in IT from Arab Open University.",
     ] as string[],
     links: [

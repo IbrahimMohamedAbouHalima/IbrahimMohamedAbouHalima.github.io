@@ -17,7 +17,7 @@ const CONTACT = [
 
 // resume.html:37
 const SUMMARY =
-  "Full-stack developer building products end to end — MERN and Next.js on the web, Flutter and React Native on mobile, Shopify for retail, and the AWS infrastructure underneath. Six live products shipped, front end, backend and deployment handled solo.";
+  "Full-stack developer building products end to end — MERN and Next.js on the web, Flutter and React Native on mobile, Shopify for retail, and the AWS infrastructure underneath. Fourteen live products shipped, front end, backend and deployment handled solo.";
 
 // resume.html:43-50
 const EXPERIENCE = {
