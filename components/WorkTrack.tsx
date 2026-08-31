@@ -1,23 +1,38 @@
+import type { CSSProperties } from 'react';
 import { projects } from '@/content/projects';
 import ProjectCard from './ProjectCard';
 import styles from './work.module.css';
 
-// Ported from index.html:119-135. Old behaviour: a 500vh section pinned via
-// `position: sticky` and translated horizontally by a scroll handler.
-// Approved deviation: a natively scrollable, scroll-snapping track — shorter
-// page, keyboard- and touch-operable, zero scroll listeners.
+// Ported from index.html:119-135. The old site pinned a 500vh section with
+// `position: sticky` and translated the track horizontally from a scroll
+// handler, so vertical scrolling drove horizontal movement and normal
+// scrolling resumed once the cards ran out.
+//
+// That behaviour is restored here, but declaratively: a named view-timeline
+// on the stage drives a translate keyframe, so there is still no scroll
+// listener, no ResizeObserver and no rAF. See work.module.css for the
+// geometry and the two fallback paths.
+//
+// `--count` has to come from here because the travel distance depends on how
+// many cards there are, and CSS cannot count DOM children.
 export default function WorkTrack() {
   return (
-    <section id="work">
-      <div className={styles.header}>
-        <span className={styles.kicker}>Selected work</span>
-        <span className={styles.counter}>{`01 / ${String(projects.length).padStart(2, '0')}`}</span>
-      </div>
+    <section
+      id="work"
+      className={styles.stage}
+      style={{ '--count': projects.length } as CSSProperties}
+    >
+      <div className={styles.pane}>
+        <div className={styles.header}>
+          <span className={styles.kicker}>Selected work</span>
+          <span className={styles.counter}>{`01 / ${String(projects.length).padStart(2, '0')}`}</span>
+        </div>
 
-      <div className={styles.track} tabIndex={0} aria-label="Selected work">
-        {projects.map((project, index) => (
-          <ProjectCard key={project.domain} project={project} index={index} />
-        ))}
+        <div className={styles.track} tabIndex={0} aria-label="Selected work">
+          {projects.map((project, index) => (
+            <ProjectCard key={project.domain} project={project} index={index} />
+          ))}
+        </div>
       </div>
     </section>
   );

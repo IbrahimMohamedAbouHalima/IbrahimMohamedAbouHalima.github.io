@@ -1,17 +1,29 @@
 /* Work track — ported from index.html:119-171.
 
-   Old behaviour: a 500vh section pinned the track with `position: sticky`
-   and translated it horizontally in a scroll handler, so cards were exactly
-   100vh tall (hence the flex/min-height:0 chain in the old inline styles).
+   Behaviour: vertical page scroll drives the track horizontally while the
+   section is pinned; when the cards run out, normal vertical scrolling
+   resumes. Same as the old site, which did it from a scroll handler.
 
-   Approved deviation: that's gone. The track is now a plain horizontally
-   scrolling grid (`scroll-snap-type: x mandatory`), so the section has
-   natural height and cards size to their own content — no flex/min-height
-   plumbing needed, no scroll listener, no ResizeObserver, no rAF.
+   Structured as progressive enhancement, in two layers:
 
-   No named view-timeline is declared here. Scroll-snap is a different CSS
-   mechanism from scroll-driven animation timelines, so this file doesn't
-   need one — and mustn't reuse `--hero` (see app/globals.css / hero.module.css). */
+   1. BASE (everything below, outside the @supports) is a natively scrolling
+      scroll-snap track. This is what Firefox gets — it has no scroll-driven
+      animations in stable — and what anyone with `prefers-reduced-motion`
+      gets, since scroll-jacking is exactly what that preference is about.
+      It is fully keyboard and touch operable on its own.
+
+   2. ENHANCED (the @supports block at the bottom) pins the section and
+      translates the track from a named view-timeline. Still no scroll
+      listener, no ResizeObserver, no rAF — the constraint holds.
+
+   The old site made the same trade: its scroll handler set the track back to
+   `overflow-x: auto` under prefers-reduced-motion.
+
+   The timeline here is named `--work`. It must never be `--hero`: that name
+   is declared globally via `timeline-scope` on body for the hero zoom, and a
+   second declaration of it would make the name ambiguous and silently kill
+   that animation. `--work` needs no timeline-scope because .track is a
+   descendant of the element that declares it. */
 
 .header {
   display: flex;
@@ -36,15 +48,26 @@
   font-feature-settings: 'tnum' 1;
 }
 
+.stage {
+  /* Geometry shared by both layers. --count comes from WorkTrack.tsx, since
+     CSS cannot count DOM children and the travel distance depends on it.
+     --distance is the horizontal overflow: total track width minus one
+     viewport. max(0px, ...) keeps it sane if the cards ever fit on screen. */
+  --card-w: min(700px, 80vw);
+  --pad: max(24px, calc((100vw - 1200px) / 2 + 24px));
+  --track-w: calc(var(--count) * var(--card-w));
+  --distance: max(0px, calc(var(--track-w) + var(--pad) * 2 - 100vw));
+}
+
 .track {
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: min(700px, 80vw);
+  grid-auto-columns: var(--card-w);
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   overscroll-behavior-x: contain;
   align-items: start;
-  padding: 0 max(24px, calc((100% - 1200px) / 2 + 24px)) 64px;
+  padding: 0 var(--pad) 64px;
   box-sizing: border-box;
 }
 
@@ -209,4 +232,78 @@
 
 .link:active {
   background: color-mix(in srgb, var(--color-accent) 18%, transparent);
+}
+
+/* ── Enhancement: scroll-jacked horizontal track ──────────────────────────
+   Only where scroll-driven animations exist AND motion is welcome. Firefox
+   and reduced-motion users keep the scroll-snap track defined above. */
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .stage {
+      position: relative;
+      /* One pixel of page scroll = one pixel of track travel, plus the
+         viewport the pinned pane occupies. No dead scroll at either end. */
+      height: calc(100svh + var(--distance));
+      view-timeline: --work block;
+    }
+
+    .pane {
+      position: sticky;
+      top: 0;
+      height: 100svh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* `contain` spans exactly the pinned travel: stage top aligned with the
+       scrollport top, through stage bottom aligned with its bottom. This is
+       the algebraic equal of the old handler's
+       -stage.getBoundingClientRect().top / (offsetHeight - innerHeight). */
+    .track {
+      display: flex;
+      align-items: stretch;
+      flex: 1;
+      min-height: 0;
+      overflow: visible;
+      scroll-snap-type: none;
+      animation: track-slide linear both;
+      animation-timeline: --work;
+      animation-range: contain;
+    }
+
+    /* Cards fill the pinned pane, as they did on the old site. An open case
+       study can outgrow 100svh, and the pane clips — so the card scrolls
+       rather than hiding its own content. */
+    .card {
+      flex: 0 0 auto;
+      width: var(--card-w);
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow-y: auto;
+      scroll-snap-align: none;
+    }
+
+    .figure {
+      flex: 1;
+      min-height: 0;
+    }
+
+    .image,
+    .placeholder {
+      height: 100%;
+      aspect-ratio: auto;
+    }
+  }
+}
+
+@keyframes track-slide {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(calc(-1 * var(--distance)), 0, 0);
+  }
 }

@@ -73,6 +73,21 @@ const CHECKS = [
       && css.some((p) => read(p).includes('view-timeline:--hero'))
       && css.some((p) => read(p).includes('@supports not'));
   }],
+  ['work track is scroll-jacked, with its scroll-snap fallback intact', () => {
+    const html = read('index.html');
+    const css = [...html.matchAll(/href="\/(_next\/static\/[^"]+\.css)"/g)].map((m) => m[1]);
+    const all = css.map((p) => read(p)).join('');
+    // Same lesson as the hero check above: match the timeline NAME. `--work`
+    // must never collide with `--hero` — a duplicate `--hero` declaration
+    // makes that name ambiguous and silently kills the hero zoom.
+    return css.length > 0
+      && all.includes('view-timeline:--work')
+      && all.includes('animation-timeline:--work')
+      && (all.match(/view-timeline:--hero/g) || []).length === 1
+      // the base layer everyone without scroll-driven animations falls back to
+      && all.includes('scroll-snap-type:x mandatory')
+      && all.includes('prefers-reduced-motion:no-preference');
+  }],
   ['every project renders into the static HTML', () => {
     const html = read('index.html');
     return ['Masarra', 'Givitude', 'Mubaader', 'Mubaader Realtor', 'Theqa Invest', 'Hamoo']
