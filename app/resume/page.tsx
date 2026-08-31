@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { site } from '@/content/site';
+import PrintButton from '@/components/PrintButton';
 
 // Ported verbatim from resume.html (130 lines, entire file). The source is a
 // standalone print-style document — doc-page.js there provides layout only,
@@ -89,7 +90,10 @@ export default function ResumePage() {
     // matches the pre-fix padding this page already shipped with.
     <main className="mx-auto flex w-full max-w-[820px] flex-col gap-[20px] px-6 py-[0.6in] sm:px-[0.7in]">
       <header>
-        <h1 className="-ml-[0.058em] text-[40px] leading-[1.06] tracking-[-0.02em]">{site.hero.name}</h1>
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <h1 className="-ml-[0.058em] text-[40px] leading-[1.06] tracking-[-0.02em]">{site.hero.name}</h1>
+          <PrintButton />
+        </div>
         <p className="mt-[10px] text-[12.5px] leading-[20px] tracking-[0.06em] uppercase text-accent-700">
           Full-stack · DevOps · Mobile · Shopify developer
         </p>

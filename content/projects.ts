@@ -26,7 +26,7 @@ export const projects: Project[] = [
       "Masarra lets people find and book events. It runs as a website and as a mobile app on both stores, sharing one backend.",
     built: "The whole product: API and database, the booking flow, the web front end and the React Native mobile app.",
     stack: "MongoDB, Express, React, Node.js, React Native, AWS",
-    image: "/images/Masarra.jpg",
+    image: "/images/Masarra.webp",
   },
   {
     title: "Givitude",
@@ -38,7 +38,7 @@ export const projects: Project[] = [
       "Givitude is built around buying gifts. The website handles browsing and ordering; the mobile apps carry the same flow to iOS and Android.",
     built: "The Next.js website and the Flutter mobile apps, plus the backend and hosting behind both.",
     stack: "Next.js, Node.js, MongoDB, Flutter, AWS",
-    image: "/images/Givitude.png",
+    image: "/images/Givitude.webp",
   },
   {
     title: "Mubaader",
@@ -50,7 +50,7 @@ export const projects: Project[] = [
       "Mubaader's main landing page: what the company does and how to reach it, as the entry point to the group's other sites.",
     built: "Built and deployed the site end to end, including content structure and hosting.",
     stack: "MongoDB, Express, React, Node.js",
-    image: "/images/mubaader.png",
+    image: "/images/mubaader.webp",
   },
   {
     title: "Mubaader Realtor",
@@ -62,7 +62,7 @@ export const projects: Project[] = [
       "The real estate side of Mubaader: properties presented for sale and rent, with enquiries coming through the site.",
     built: "Front end, backend and listing management, plus deployment.",
     stack: "Next.js, MongoDB, Express, Node.js",
-    image: "/images/MubaaderRealtor.jpg",
+    image: "/images/MubaaderRealtor.webp",
   },
   {
     title: "Theqa Invest",
@@ -73,7 +73,7 @@ export const projects: Project[] = [
     product: "Theqa Invest presents the group's investment arm to prospective investors and partners.",
     built: "Designed the page structure, built it, and shipped it.",
     stack: "MongoDB, Express, React, Node.js",
-    image: "/images/TheqaInvest.png",
+    image: "/images/TheqaInvest.webp",
   },
   {
     title: "Hamoo",
@@ -84,6 +84,6 @@ export const projects: Project[] = [
     product: "Hamoo is a retail store for baby products, running on Shopify with a customised theme.",
     built: "Set up the store, customised the theme, structured the catalogue and configured checkout.",
     stack: "Shopify, Liquid",
-    image: "/images/Hamoo.png",
+    image: "/images/Hamoo.webp",
   },
 ];

@@ -115,6 +115,23 @@ const CHECKS = [
     read('index.html').includes(ABOUT_FIRST_SENTENCE)],
   ['contact email rendered', () =>
     read('index.html').includes('ibrahim.ihab@hotmail.com')],
+  ['monitor click-to-skip is a real anchor', () =>
+    // A plain <a href="#work">, so the skip works with no JavaScript. If this
+    // ever becomes a JS handler it stops working before hydration.
+    /<a[^>]+href="#work"[^>]+aria-label=/.test(read('index.html'))
+    || /<a[^>]+aria-label=[^>]+href="#work"/.test(read('index.html'))],
+  ['resume print styles ship', () => {
+    // These rules ARE the downloaded PDF's design — the button opens the
+    // browser print dialog rather than serving a generated file, so losing
+    // them silently degrades the PDF rather than breaking a visible page.
+    const html = read('resume/index.html');
+    const css = [...html.matchAll(/href="\/(_next\/static\/[^"]+\.css)"/g)].map((m) => m[1]);
+    const all = css.map((p) => read(p)).join('');
+    return all.includes('@page')
+      && all.includes('@media print')
+      && all.includes('break-inside:avoid')
+      && /@media print[\s\S]{0,400}?\.no-print/.test(all);
+  }],
   ['resume route is exported', () => existsSync(join(OUT, 'resume/index.html'))],
 ];
 

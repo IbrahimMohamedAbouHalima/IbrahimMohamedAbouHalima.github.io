@@ -246,11 +246,45 @@
   margin: 1.35em 0 0;
 }
 
+/* Covers the whole monitor so clicking it skips the zoom. Above .screen, so
+   the mockup is clickable everywhere; .actions below is raised back above
+   this, so the two real CTAs keep working. */
+.skip {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  cursor: pointer;
+}
+
+/* Visible only to screen readers and on keyboard focus — the affordance is
+   the monitor itself, but a keyboard user needs to see where focus went. */
+.skipLabel {
+  position: absolute;
+  left: 50%;
+  bottom: 1.2em;
+  translate: -50% 0;
+  padding: 0.4em 0.9em;
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-size: 1.1em;
+  color: var(--color-bg);
+  background: var(--color-accent);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.skip:focus-visible .skipLabel {
+  opacity: 1;
+}
+
 .actions {
   display: flex;
   gap: 0.7em;
   margin-top: 1.6em;
   flex-wrap: wrap;
+  /* above .skip, so these two links stay clickable through the overlay */
+  position: relative;
+  z-index: 3;
 }
 
 .actionPrimary,

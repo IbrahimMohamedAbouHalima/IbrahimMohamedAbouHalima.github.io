@@ -91,3 +91,54 @@ section[id] { scroll-margin-top: 76px; }
   --font-heading: var(--font-heading);
   --font-body: var(--font-heading);
 }
+
+/* ── Print / "Save as PDF" ────────────────────────────────────────────────
+   The résumé's PDF is produced by the browser's own print dialog (see
+   components/PrintButton.tsx), so these rules ARE the PDF's design. There is
+   no separate generated file to drift out of sync with the page. */
+
+@page {
+  size: A4;
+  /* The page's on-screen 0.6in/0.7in document margins move to the paper here,
+     so the printed sheet keeps them instead of double-applying them. */
+  margin: 0.6in 0.7in;
+}
+
+@media print {
+  html,
+  body {
+    background: #fff;
+    /* Print engines drop backgrounds by default; forcing pure black text
+       keeps the color-mix() dimmed body copy legible on paper. */
+    color: #000;
+  }
+
+  /* The print dialog is the download UI — the button must not be in the PDF. */
+  .no-print {
+    display: none !important;
+  }
+
+  /* Margins now live on @page. */
+  main {
+    max-width: none !important;
+    padding: 0 !important;
+  }
+
+  /* Never split an experience bullet list, a project or a skills group across
+     two sheets — a résumé that breaks mid-entry reads as a formatting bug. */
+  section,
+  li,
+  h1,
+  h2 {
+    break-inside: avoid;
+  }
+
+  h2 {
+    break-after: avoid;
+  }
+
+  a {
+    color: #000;
+    text-decoration: none;
+  }
+}

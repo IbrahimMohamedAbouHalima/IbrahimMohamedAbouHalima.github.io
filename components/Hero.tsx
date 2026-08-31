@@ -14,6 +14,17 @@ export default function Hero() {
         <div className={styles.column}>
           <div className={styles.monitor}>
             <div className={styles.frame} />
+
+            {/* Click the monitor to skip the zoom and land where the hero
+                ends — the point the nav finishes fading in. A plain anchor,
+                so it needs no JavaScript and rides the `scroll-behavior:
+                smooth` already set on html. It sits above the screen so the
+                whole mockup is clickable, and the two real CTAs inside are
+                raised back above it (see .actions in hero.module.css). */}
+            <a className={styles.skip} href="#work" aria-label="Skip the intro">
+              <span className={styles.skipLabel}>Skip the intro</span>
+            </a>
+
             <div className={styles.screen}>
               <div className={styles.screenNav}>
                 <span className={styles.screenBrand}>{hero.name}</span>
@@ -42,7 +53,7 @@ export default function Hero() {
                 <figure className={`grayscale ${styles.portrait}`}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src="/images/hero-portrait.jpg"
+                    src="/images/hero-portrait.webp"
                     width={1066}
                     height={1599}
                     alt={hero.name}
