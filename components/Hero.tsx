@@ -42,9 +42,9 @@ export default function Hero() {
                 <figure className={`grayscale ${styles.portrait}`}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src="/images/hero-portrait.webp"
-                    width={486}
-                    height={486}
+                    src="/images/hero-portrait.jpg"
+                    width={1066}
+                    height={1599}
                     alt={hero.name}
                   />
                 </figure>

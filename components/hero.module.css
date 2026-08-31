@@ -287,10 +287,12 @@
   height: auto;
   aspect-ratio: 4 / 5;
   object-fit: cover;
-  /* The old image-slot pinned the 486×486 source's centre at 56.58% of the
-     4:5 frame (.image-slots.state.json → hero-portrait.x). Cover leaves
-     0.2·H of horizontal slack, and that offset consumes 0.0474·H of it. */
-  object-position: 24% center;
+  /* The 24% offset that used to live here was derived for the old 486×486
+     square source, which cover cropped horizontally. The replacement is
+     1066×1599 (2:3) — taller than this 4:5 frame, so cover now crops top and
+     bottom instead and a horizontal offset does nothing but shift a crop
+     that no longer exists. Centre is correct for the new source. */
+  object-position: center;
 }
 
 .stand {

@@ -27,7 +27,7 @@ export const site = {
   },
 
   glance: [
-    { label: "Products shipped live", value: "6" },
+    { label: "Products shipped live", value: "14" },
     { label: "Platforms — web, iOS, Android", value: "3" },
     { label: "Mobile stacks — Flutter, React Native", value: "2" },
     { label: "Developer, front to back", value: "1" },
@@ -80,9 +80,18 @@ export const site = {
       "REST APIs",
     ] as string[],
     timeline: [
-      { role: "Full Stack Developer — Mubaader Services", period: "Mar 2025 — Present" },
-      { role: "BSc Information Technology — Arab Open University", period: "2022 — 2025" },
-      { role: "Diploma, Aircraft Maintenance Engineering — College of Aviation Technology", period: "—" },
+      {
+        role: "Full Stack Developer — Mubaader Services",
+        period: "Mar 2025 — Present",
+      },
+      {
+        role: "BSc Information Technology — Arab Open University",
+        period: "2022 — 2025",
+      },
+      {
+        role: "Diploma, Aircraft Maintenance Engineering — College of Aviation Technology",
+        period: "—",
+      },
       { role: "IGCSE — English School Fahaheel", period: "—" },
     ] as { role: string; period: string }[],
   },
@@ -91,7 +100,10 @@ export const site = {
     heading: "Have something to build?",
     email: "ibrahim.ihab@hotmail.com",
     phone: { label: "+965 60450463", href: "tel:+96560450463" },
-    github: { label: "GitHub", href: "https://github.com/IbrahimMohamedAbouHalima" },
+    github: {
+      label: "GitHub",
+      href: "https://github.com/IbrahimMohamedAbouHalima",
+    },
   },
 
   footer: "© 2026 Ibrahim Abou Halima — Kuwait",

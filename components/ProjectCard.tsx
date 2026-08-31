@@ -31,8 +31,8 @@ export default function ProjectCard({ project, index }: { project: Project; inde
             className={styles.image}
             src={project.image}
             alt={`${project.title} screenshot`}
-            width={1200}
-            height={750}
+            width={1920}
+            height={1080}
           />
         ) : (
           <div className={styles.placeholder}>{project.domain}</div>

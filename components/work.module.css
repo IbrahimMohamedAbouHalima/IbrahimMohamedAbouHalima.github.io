@@ -137,18 +137,19 @@
   display: block;
   width: 100%;
   height: auto;
-  aspect-ratio: 1200 / 750;
+  aspect-ratio: 16 / 9;
   object-fit: cover;
 }
 
 /* image: null placeholder — a real designed state, not a missing asset. Same
    aspect ratio a screenshot would occupy, so adding an image later doesn't
-   shift layout. Deliberately not `.grayscale` — that's a hero-only treatment. */
+   shift layout. 16:9 matches the 1920x1080 screenshots, so cover crops
+   nothing. Deliberately not `.grayscale` — that's a hero-only treatment. */
 .placeholder {
   display: grid;
   place-items: center;
   width: 100%;
-  aspect-ratio: 1200 / 750;
+  aspect-ratio: 16 / 9;
   background: var(--color-surface);
   color: var(--color-neutral-600);
   font-size: 13px;
@@ -286,15 +287,25 @@
       scroll-snap-align: none;
     }
 
+    /* The old site stretched this figure to fill the pinned card and let
+       `cover` trim the overflow — fine for the empty slots it shipped with,
+       but with real 1920x1080 screenshots in place it cropped 34% off each
+       one's width. These are the work being shown off, so the frame keeps the
+       screenshot's own ratio and the whole design stays visible. */
     .figure {
-      flex: 1;
-      min-height: 0;
+      flex: 0 0 auto;
     }
 
     .image,
     .placeholder {
-      height: 100%;
-      aspect-ratio: auto;
+      height: auto;
+      aspect-ratio: 16 / 9;
+    }
+
+    /* Cards are stretched to the pane, so with the figure no longer eating
+       the slack, the actions row would float mid-card. Pin it to the bottom. */
+    .actions {
+      margin-top: auto;
     }
   }
 }

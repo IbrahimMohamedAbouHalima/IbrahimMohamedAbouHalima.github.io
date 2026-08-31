@@ -60,7 +60,14 @@ const CHECKS = [
     const css = [...html.matchAll(/href="\/(_next\/static\/[^"]+\.css)"/g)].map((m) => m[1]);
     return css.length > 0 && css.some((p) => read(p).includes('#ec3013'));
   }],
-  ['hero portrait ships', () => existsSync(join(OUT, 'images/hero-portrait.webp'))],
+  // Was `existsSync('images/hero-portrait.webp')`, which broke the moment the
+  // portrait was swapped for a .jpg. Assert what the page actually asks for
+  // resolves, so this survives format and filename changes — and covers every
+  // project screenshot too, not just the portrait.
+  ['every referenced image ships', () => {
+    const srcs = [...read('index.html').matchAll(/src="(\/images\/[^"]+)"/g)].map((m) => m[1]);
+    return srcs.length >= 7 && srcs.every((s) => existsSync(join(OUT, s.slice(1))));
+  }],
   ['scroll-driven hero motion and its designed fallback both ship', () => {
     const html = read('index.html');
     const css = [...html.matchAll(/href="\/(_next\/static\/[^"]+\.css)"/g)].map((m) => m[1]);
