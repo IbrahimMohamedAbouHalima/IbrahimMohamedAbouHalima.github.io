@@ -117,11 +117,18 @@ const CHECKS = [
     read('index.html').includes(ABOUT_FIRST_SENTENCE)],
   ['contact email rendered', () =>
     read('index.html').includes('ibrahim.ihab@hotmail.com')],
-  ['monitor click-to-skip is a real anchor', () =>
-    // A plain <a href="#work">, so the skip works with no JavaScript. If this
-    // ever becomes a JS handler it stops working before hydration.
-    /<a[^>]+href="#work"[^>]+aria-label=/.test(read('index.html'))
-    || /<a[^>]+aria-label=[^>]+href="#work"/.test(read('index.html'))],
+  ['monitor click-to-skip anchor and its target both exist', () => {
+    const html = read('index.html');
+    // A plain <a>, so the skip works with no JavaScript — if it ever becomes a
+    // JS handler it stops working before hydration.
+    const anchor = /<a[^>]*href="#hero-end"[^>]*>/.test(html);
+    // ...and the id it points at has to exist, or the click silently does
+    // nothing. This half is why the check is worth having: an earlier version
+    // asserted only the href, and went stale when the target changed from
+    // #work to #hero-end without anyone noticing for two commits.
+    const target = /id="hero-end"/.test(html);
+    return anchor && target;
+  }],
   ['resume print styles ship', () => {
     // These rules ARE the downloaded PDF's design — the button opens the
     // browser print dialog rather than serving a generated file, so losing
