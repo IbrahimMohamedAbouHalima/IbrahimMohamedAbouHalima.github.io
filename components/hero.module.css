@@ -49,27 +49,50 @@
 .stage {
   --base-w: clamp(280px, min(86vw, (100svh - 210px) * 1.6), 640px);
 
-  --end-w: min(calc(var(--base-w) * 4), max(102vw, calc(102svh * 1.6)));
+  /* The page's content inset — identical to the work track's --pad, so the
+     hero and the project cards share one grid. */
+  --gutter: max(24px, calc((100vw - 1200px) / 2 + 24px));
 
-  /* Fallback size only. `--end-w` deliberately overshoots the viewport — the
-     zoom is meant to overflow, and `.pane` clips it. But the fallback is where
-     a Firefox or reduced-motion visitor *lands*, and on a portrait phone the
-     `102svh * 1.6` term makes the screen ~3.4x the viewport width, cropping the
-     headline to "Ops.". Capping at the viewport keeps final size wherever
-     final size fits and stays readable where it doesn't. */
+  /* The zoom stops where the monitor's SCREEN CONTENT lines up with the
+     project cards below, rather than overflowing the viewport.
+
+     The screen carries 2.2em of horizontal padding and its em is W/64, so for
+     a monitor of width W centred in the viewport the content's left edge is
+
+         (100vw - W)/2 + (2.2/64)·W
+
+     Setting that equal to --gutter and solving:
+
+         50vw - gutter = W·(0.5 - 2.2/64) = W · 0.465625
+
+     Dividing a length by a plain number is legal in calc(), so this resolves.
+     If .screen's 2.2em padding ever changes, the 0.465625 must change with it
+     or the two sections stop lining up. */
+  --aligned-w: calc((50vw - var(--gutter)) / 0.465625);
+
+  /* ...but never taller than the space under the nav, and never smaller than
+     where it started (which would run the zoom backwards on a tiny viewport). */
+  --end-w: min(
+    calc(var(--base-w) * 4),
+    max(
+      var(--base-w),
+      min(var(--aligned-w), calc((100svh - var(--nav-h)) * 1.6))
+    )
+  );
+
+  /* Where a Firefox or reduced-motion visitor lands, with no animation to
+     run. --end-w already fits the viewport by construction, so this is just
+     a belt-and-braces cap for the case where --base-w floors it larger. */
   --fallback-w: min(var(--end-w), 100vw);
 
   /* The fixed nav's height — the same 76px `section[id]` reserves in
      scroll-margin-top, so the zoom's end state and anchor landings agree. */
   --nav-h: 76px;
 
-  /* How far the fully-zoomed monitor spills past each edge of the viewport.
-     An earlier attempt fixed the nav-overlapping-the-portrait problem by
-     shrinking --end-w until the whole monitor fit on screen — which gutted the
-     zoom (2.2x down to 1.66x here, and no zoom at all on short viewports).
-     The overflow is the point of the effect; what actually needed fixing was
-     the CONTENT being pushed off-screen with it. So keep the overshoot and let
-     .screen pad its content back inside by exactly this much. */
+  /* Normally 0: --end-w is chosen to fit. These only become non-zero when the
+     --base-w floor forces the monitor larger than the viewport on a very small
+     screen, and they pad the screen's content back inside so the headline and
+     portrait are never carried off the edge. */
   --end-h: calc(var(--end-w) / 1.6);
   --ovf-x: max(0px, calc((var(--end-w) - 100vw) / 2));
   --ovf-y: max(0px, calc((var(--end-h) - 100svh) / 2));
@@ -126,6 +149,12 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  /* Centres the monitor in the space BELOW the fixed nav rather than in the
+     whole viewport. A flex item's margin counts toward its outer size, so the
+     free space still splits evenly — the effect is centring within
+     (100svh - --nav-h), offset down by --nav-h. The backdrop stays full-bleed
+     because it is positioned against the pane, not this column. */
+  margin-top: var(--nav-h);
   font-size: calc(var(--base-w) / 64);
   animation-name: monitor-scale;
   animation-timing-function: var(--smoothstep);
@@ -233,7 +262,7 @@
   }
   to {
     padding:
-      calc(1.8em + var(--ovf-y) + var(--nav-h))
+      calc(1.8em + var(--ovf-y))
       calc(2.2em + var(--ovf-x))
       calc(1.8em + var(--ovf-y));
   }

@@ -25,7 +25,24 @@ export default function WorkTrack() {
       <div className={styles.pane}>
         <div className={styles.header}>
           <span className={styles.kicker}>Selected work</span>
-          <span className={styles.counter}>{`01 / ${String(projects.length).padStart(2, '0')}`}</span>
+
+          {/* The current number was static. The old site rewrote it from the
+              scroll handler; here the whole column of numbers is rendered and
+              a one-line window slides over it on the same timeline that drives
+              the track, stepped so it lands on whole numbers. No JavaScript,
+              and it stays in sync with the track by construction rather than
+              by a second calculation. aria-live is deliberately absent — this
+              is decorative chrome, not an announcement. */}
+          <span className={styles.counter}>
+            <span className={styles.counterWindow}>
+              <span className={styles.counterList}>
+                {projects.map((project, index) => (
+                  <span key={project.domain}>{String(index + 1).padStart(2, '0')}</span>
+                ))}
+              </span>
+            </span>
+            {` / ${String(projects.length).padStart(2, '0')}`}
+          </span>
         </div>
 
         <div className={styles.track} tabIndex={0} aria-label="Selected work">

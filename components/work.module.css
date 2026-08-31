@@ -48,6 +48,26 @@
   font-feature-settings: 'tnum' 1;
 }
 
+/* One line tall, clipping a column of every project number. */
+.counterWindow {
+  display: inline-block;
+  height: 1em;
+  overflow: hidden;
+  vertical-align: bottom;
+}
+
+.counterList {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Each number must occupy exactly 1em for the step translation to land on
+   whole numbers rather than between two of them. */
+.counterList > span {
+  height: 1em;
+  line-height: 1;
+}
+
 .stage {
   /* Geometry shared by both layers. --count comes from WorkTrack.tsx, since
      CSS cannot count DOM children and the travel distance depends on it.
@@ -274,6 +294,16 @@
       animation-range: contain;
     }
 
+    /* steps(--count, jump-none) gives exactly --count discrete positions across
+       the scroll — including both ends — so the window lands on 01 at the
+       start and on the last number at the end, never halfway between two.
+       Without scroll-driven animations the list simply sits at 01. */
+    .counterList {
+      animation: counter-roll steps(var(--count), jump-none) both;
+      animation-timeline: --work;
+      animation-range: contain;
+    }
+
     /* Cards fill the pinned pane, as they did on the old site. An open case
        study can outgrow 100svh, and the pane clips — so the card scrolls
        rather than hiding its own content. */
@@ -316,5 +346,14 @@
   }
   to {
     transform: translate3d(calc(-1 * var(--distance)), 0, 0);
+  }
+}
+
+@keyframes counter-roll {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(calc(-1em * (var(--count) - 1)));
   }
 }

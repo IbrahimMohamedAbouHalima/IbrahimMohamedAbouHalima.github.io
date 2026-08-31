@@ -104,7 +104,19 @@ const CHECKS = [
   }],
   ['case studies are in the markup, not injected by JS', () =>
     read('index.html').includes('<details')],
-  ['work counter reads 01 / 06', () => read('index.html').includes('01 / 06')],
+  ['work counter renders every project number and the total', () => {
+    const html = read('index.html');
+    // The current number used to be a static "01 / 06" string. It is now a
+    // column of every number, scrolled by a stepped animation, so assert the
+    // column is complete and the total still matches the project count —
+    // a short column would silently stop counting partway through the track.
+    const at = html.indexOf('counterList');
+    if (at < 0) return false;
+    // Six two-digit spans are ~120 chars; 400 is slack without reaching the
+    // card kickers further down, which use the same numbers in <p> tags.
+    const nums = [...html.slice(at, at + 400).matchAll(/<span>(\d\d)<\/span>/g)].map((m) => m[1]);
+    return nums.join(',') === '01,02,03,04,05,06' && html.includes('/ 06');
+  }],
   ['nav anchor targets exist', () => {
     const html = read('index.html');
     return ['work', 'services', 'about', 'contact'].every((id) => html.includes(`id="${id}"`));
