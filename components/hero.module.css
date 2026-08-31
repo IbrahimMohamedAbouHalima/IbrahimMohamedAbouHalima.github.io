@@ -48,16 +48,32 @@
 
 .stage {
   --base-w: clamp(280px, min(86vw, (100svh - 210px) * 1.6), 640px);
-  --end-w: min(calc(var(--base-w) * 4), max(102vw, calc(102svh * 1.6)));
 
-  /* Fallback size only. `--end-w` deliberately overshoots the viewport — the
-     zoom is meant to overflow, and `.pane` clips it. But the fallback is where
-     a Firefox or reduced-motion visitor *lands*, and on a portrait phone the
-     `102svh * 1.6` term makes the screen ~3.4x the viewport width, cropping the
-     headline to "Ops.". Capping at the viewport keeps final size wherever
-     final size fits (on 1280x800 this is 1280px vs 1305.6px) and stays
-     readable where it doesn't. */
-  --fallback-w: min(var(--end-w), 100vw);
+  /* The fixed nav's height — the same 76px `section[id]` reserves in
+     scroll-margin-top, so the zoom's end state and anchor landings agree. */
+  --nav-h: 76px;
+  /* Side gutter, matching the page's own content inset. */
+  --edge: max(24px, calc((100vw - 1200px) / 2 + 24px));
+
+  /* The zoom used to end at max(102vw, 102svh*1.6), deliberately overflowing
+     so `.pane` clipped it. That put the mockup edge-to-edge, which left the
+     fixed nav sitting on top of the portrait and no breathing room at the
+     sides. It now ends at the largest 16:10 box that FITS inside the viewport
+     once the nav and the gutters are taken out.
+     The outer max() floors it at --base-w so a short viewport can never make
+     the end state smaller than the start and run the zoom backwards. */
+  --fit-w: max(
+    var(--base-w),
+    min(
+      calc(100vw - 2 * var(--edge)),
+      calc((100svh - var(--nav-h) - 2 * var(--edge)) * 1.6)
+    )
+  );
+  --end-w: min(calc(var(--base-w) * 4), var(--fit-w));
+
+  /* Now that --end-w fits by construction, the fallback needs no separate
+     viewport cap — it lands on the same size the animation ends at. */
+  --fallback-w: var(--end-w);
 
   /* smoothstep, exactly: the cubic Bézier with control points (1/3, 0) and
      (2/3, 1) has x(t) = t and y(t) = 3t² - 2t³ = t²(3 - 2t). */
@@ -109,6 +125,12 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  /* Centres the monitor in the space BELOW the fixed nav rather than in the
+     whole viewport. A flex item's margin counts toward its outer size, so the
+     remaining free space still splits evenly — the effect is centring within
+     (100svh - --nav-h), offset down by --nav-h. The backdrop stays full-bleed
+     because it is absolutely positioned against the pane, not this column. */
+  margin-top: var(--nav-h);
   font-size: calc(var(--base-w) / 64);
   animation-name: monitor-scale;
   animation-timing-function: var(--smoothstep);
@@ -442,4 +464,31 @@
      and a second Résumé chip under the real one. */
   .screenNav { display: none; }
   .nav { opacity: 1; pointer-events: auto; animation-name: none; }
+}
+
+/* Skip-link target: top edge one viewport above the stage's bottom, i.e. the
+   last frame the sticky pane is still pinned. Scrolling here lands on the
+   completed zoom with the nav showing. */
+.heroEnd {
+  position: absolute;
+  left: 0;
+  bottom: 100svh;
+  width: 1px;
+  height: 0;
+  pointer-events: none;
+}
+
+/* Without scroll-driven animations the stage is one viewport tall and there is
+   no pinned range to land in — the useful destination is the work section, so
+   put the target at the stage's bottom edge instead. */
+@supports not (animation-timeline: view()) {
+  .heroEnd {
+    bottom: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heroEnd {
+    bottom: 0;
+  }
 }

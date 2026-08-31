@@ -105,6 +105,25 @@ section[id] { scroll-margin-top: 76px; }
 }
 
 @media print {
+  /* Chrome's PDF export subsets the self-hosted Archivo in a way that inserts
+     a spurious space after every `m` in the PDF's text layer — the name came
+     out as "Ibrahim  Abou Halim a" and the project as "Ham oo — ham ookw.com".
+     Recruiters' ATS software reads that layer, so a mangled name is a real
+     cost; matching the site's typeface exactly is not. A system font has clean
+     metrics, extracts correctly, and drops the PDF from 139KB to 63KB.
+     Verified by extracting the text back out of the generated file. */
+  *,
+  *::before,
+  *::after {
+    font-family: Arial, Helvetica, sans-serif !important;
+  }
+
+  /* The h1's negative tracking compounded the same problem on the one field
+     an ATS most needs to read correctly. */
+  h1 {
+    letter-spacing: normal;
+  }
+
   html,
   body {
     background: #fff;

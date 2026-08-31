@@ -21,7 +21,7 @@ export default function Hero() {
                 smooth` already set on html. It sits above the screen so the
                 whole mockup is clickable, and the two real CTAs inside are
                 raised back above it (see .actions in hero.module.css). */}
-            <a className={styles.skip} href="#work" aria-label="Skip the intro">
+            <a className={styles.skip} href="#hero-end" aria-label="Skip the intro">
               <span className={styles.skipLabel}>Skip the intro</span>
             </a>
 
@@ -72,6 +72,13 @@ export default function Hero() {
         {/* UI chrome, not content — index.html:89 */}
         <p className={styles.hint}>Scroll to zoom in</p>
       </div>
+
+      {/* Scroll target for the skip link. Sits one viewport above the stage's
+          bottom edge, which is exactly the last frame the pane is still
+          pinned — the moment the zoom finishes and the nav has faded in.
+          Linking to #work instead would overshoot the whole hero and land in
+          the work section, with the monitor already scrolled away. */}
+      <div id="hero-end" className={styles.heroEnd} aria-hidden="true" />
     </section>
   );
 }

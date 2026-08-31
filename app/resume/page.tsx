@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import { site } from '@/content/site';
-import PrintButton from '@/components/PrintButton';
 
 // Ported verbatim from resume.html (130 lines, entire file). The source is a
 // standalone print-style document — doc-page.js there provides layout only,
@@ -92,7 +91,16 @@ export default function ResumePage() {
       <header>
         <div className="flex flex-wrap items-start justify-between gap-4">
           <h1 className="-ml-[0.058em] text-[40px] leading-[1.06] tracking-[-0.02em]">{site.hero.name}</h1>
-          <PrintButton />
+          {/* The PDF is generated FROM this page (scripts/make-resume-pdf.mjs),
+              so it can never disagree with what is rendered here. A plain
+              anchor — no client component, no JavaScript on the site at all. */}
+          <a
+            className="no-print inline-flex items-center border border-accent bg-accent px-4 py-3 font-heading text-[14px] leading-[1.2] text-bg"
+            href="/resume.pdf"
+            download
+          >
+            Download PDF
+          </a>
         </div>
         <p className="mt-[10px] text-[12.5px] leading-[20px] tracking-[0.06em] uppercase text-accent-700">
           Full-stack · DevOps · Mobile · Shopify developer

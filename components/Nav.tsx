@@ -19,7 +19,7 @@ export default function Nav() {
           {label}
         </a>
       ))}
-      <a className={styles.navCta} href="/resume">
+      <a className={styles.navCta} href="/resume.pdf">
         Résumé
       </a>
     </nav>
