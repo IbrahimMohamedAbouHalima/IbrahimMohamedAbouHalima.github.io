@@ -30,7 +30,9 @@
   align-items: baseline;
   justify-content: space-between;
   gap: 24px;
-  padding: 92px max(24px, calc((100% - 1200px) / 2 + 24px)) 24px;
+  /* Clears the fixed header rather than assuming its height: at 92px flat the
+     kicker and counter hid behind a 107px mobile nav. */
+  padding: calc(var(--nav-h) + 16px) max(24px, calc((100% - 1200px) / 2 + 24px)) 24px;
 }
 
 .kicker {

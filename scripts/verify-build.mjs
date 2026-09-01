@@ -151,6 +151,21 @@ const CHECKS = [
       && /<link[^>]+rel="icon"[^>]+href="\/favicon\.ico/.test(html)
       && /<link[^>]+rel="apple-touch-icon"/.test(html);
   }],
+  ['header height is one shared token, and the mobile rules ship', () => {
+    const html = read('index.html');
+    const css = [...html.matchAll(/href="\/(_next\/static\/[^"]+\.css)"/g)]
+      .map((p) => read(p[1])).join('');
+    // The nav's height was a 76px literal in three places while the real
+    // mobile nav was 107px, so the work section's kicker and counter sat
+    // underneath it. One token now, consumed rather than restated.
+    return css.includes('--nav-h')
+      && css.includes('var(--nav-h)')
+      // brand collapses to initials so the row cannot wrap and grow
+      && css.includes('white-space:nowrap')
+      && /@media[^{]*max-width:\s*640px/.test(css)
+      // the work header offsets by the token instead of a magic number
+      && /padding:\s*calc\(var\(--nav-h\)/.test(css);
+  }],
   ['resume print styles ship', () => {
     // These rules ARE the downloaded PDF's design — the button opens the
     // browser print dialog rather than serving a generated file, so losing

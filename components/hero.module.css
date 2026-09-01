@@ -85,9 +85,7 @@
      a belt-and-braces cap for the case where --base-w floors it larger. */
   --fallback-w: min(var(--end-w), 100vw);
 
-  /* The fixed nav's height — the same 76px `section[id]` reserves in
-     scroll-margin-top, so the zoom's end state and anchor landings agree. */
-  --nav-h: 76px;
+  /* --nav-h is a global token in app/globals.css. */
 
   /* Normally 0: --end-w is chosen to fit. These only become non-zero when the
      --base-w floor forces the monitor larger than the viewport on a very small
@@ -465,6 +463,20 @@
   font-weight: var(--font-heading-weight);
   font-size: 18px;
   margin-right: auto;
+  /* Without this the name wraps inside the flex row on a narrow screen and the
+     nav grows to 107px — which is what was covering the work section's kicker
+     and counter. The nav must stay one line tall at every width. */
+  white-space: nowrap;
+}
+
+/* The brand collapses to the initials below 640px — the same mark as the
+   favicon. The full name is still on the page as the hero h1, so nothing is
+   lost; this only stops a 19-character name from crowding out the links. */
+.brandShort { display: none; }
+
+@media (max-width: 640px) {
+  .brandFull { display: none; }
+  .brandShort { display: inline; }
 }
 
 .navLink {
@@ -556,4 +568,40 @@
   .heroEnd {
     bottom: 0;
   }
+}
+
+
+/* ── mobile header ─────────────────────────────────────────────────────────
+   Measured at 375px the row needed 458px, so the Résumé CTA sat 59px off the
+   screen. Trimming type, gaps and padding — with the brand down to initials
+   above — brings it to roughly 330px, which fits a 360px phone. Every link
+   stays: no hamburger, and therefore no JavaScript. */
+@media (max-width: 640px) {
+  .nav {
+    gap: var(--space-2);
+    padding-block: var(--space-2);
+    padding-inline: 16px;
+  }
+
+  .navBrand { font-size: 16px; }
+  .navLink { font-size: 12px; }
+
+  .navCta,
+  .navCta:hover {
+    font-size: 12px;
+    padding-inline: var(--space-3);
+    padding-block: var(--space-2);
+  }
+}
+
+/* Smallest phones still in use (iPhone SE, 320px). At the 640px step above the
+   row needs 323px, which is 3px over — it survives only because the flex row
+   compresses. Buying headroom back with tighter gaps and padding. */
+@media (max-width: 380px) {
+  .nav {
+    gap: var(--space-1);
+    padding-inline: 12px;
+  }
+
+  .navLink { font-size: 11.5px; }
 }

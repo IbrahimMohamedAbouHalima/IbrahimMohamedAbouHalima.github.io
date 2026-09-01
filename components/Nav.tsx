@@ -13,7 +13,13 @@ const LINKS = [
 export default function Nav() {
   return (
     <nav className={styles.nav}>
-      <span className={styles.navBrand}>{site.hero.name}</span>
+      {/* Full name on desktop, initials on phones — see .brandShort in
+          hero.module.css. Both are rendered and CSS picks one, so the swap
+          needs no JavaScript and no layout measurement. */}
+      <span className={styles.navBrand}>
+        <span className={styles.brandFull}>{site.hero.name}</span>
+        <span className={styles.brandShort}>I.A.</span>
+      </span>
       {LINKS.map(({ label, href }) => (
         <a key={href} className={styles.navLink} href={href}>
           {label}

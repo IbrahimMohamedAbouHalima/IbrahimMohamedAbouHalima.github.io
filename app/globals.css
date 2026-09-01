@@ -49,6 +49,13 @@
 /* Not Tailwind token types — plain custom properties, same values as the
    design system. --color-divider is referenced directly in arbitrary values. */
 :root {
+  /* Height of the fixed header. Global because three places depend on it:
+     the hero's zoom end state, the work section's top offset, and
+     scroll-margin-top for anchor landings. It was a 76px literal in each,
+     and on mobile the real nav was 107px — so the work header's kicker and
+     counter sat underneath it. */
+  --nav-h: 76px;
+
   --color-divider: color-mix(in srgb, #201e1d 40%, transparent);
   --font-heading-weight: 800;
 
@@ -58,6 +65,10 @@
   --space-4: 16px;
   --space-6: 24px;
   --space-8: 32px;
+}
+
+@media (max-width: 640px) {
+  :root { --nav-h: 60px; }
 }
 
 html { scroll-behavior: smooth; }
@@ -83,7 +94,7 @@ h1, h2, h3, h4 {
 a { color: var(--color-accent-700); text-decoration: none; }
 a:hover { color: var(--color-accent); text-decoration: underline; }
 
-section[id] { scroll-margin-top: 76px; }
+section[id] { scroll-margin-top: var(--nav-h); }
 
 .grayscale { filter: grayscale(1) contrast(1.08); }
 
