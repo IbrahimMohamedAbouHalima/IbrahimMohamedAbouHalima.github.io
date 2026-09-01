@@ -104,8 +104,17 @@ export const site = {
         items: ["React Native", "Flutter"],
       },
       {
+        // Split from cloud/hosting below: as one 16-item group this pushed the
+        // résumé onto a second page, and six groups fill its three-column grid
+        // as two even rows instead of a lopsided 3 + 2.
+        // "Git" rather than the phrase "version control" — it is the concrete
+        // tool, and it is what an ATS keyword search looks for.
         title: "DevOps",
-        items: ["AWS", "EC2", "S3", "SES", "Route 53", "GoDaddy", "InMotion Hosting", "CI/CD", "Deployment"],
+        items: ["Docker", "Kubernetes", "Git", "GitHub", "GitHub Actions", "CI/CD", "Deployment"],
+      },
+      {
+        title: "Cloud & hosting",
+        items: ["AWS", "EC2", "S3", "SES", "Route 53", "CDN", "Load balancing", "GoDaddy", "InMotion Hosting"],
       },
       {
         title: "Shopify",

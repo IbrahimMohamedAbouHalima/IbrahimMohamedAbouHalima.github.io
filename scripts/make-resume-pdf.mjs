@@ -79,3 +79,8 @@ writeFileSync('public/resume.pdf.sha256', `${hash}\n`);
 
 console.log('Wrote public/resume.pdf');
 console.log(`Stamped public/resume.pdf.sha256 (${hash.slice(0, 12)}…)`);
+// Both files land in public/, and out/ still holds the previous copies until
+// the next build — so verify-build.mjs run right now would compare against the
+// OLD stamp and report the PDF stale. Say so rather than leaving it to be
+// rediscovered.
+console.log('\nRun `npm run build` again to copy both into out/ before verifying.');
