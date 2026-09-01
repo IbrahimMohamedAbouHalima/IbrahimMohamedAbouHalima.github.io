@@ -49,13 +49,14 @@ const PROJECTS = [
   },
 ];
 
-// resume.html:91-103. Titles carry a literal "&" — JSX re-escapes it to
-// "&amp;" when serialized, same as the source markup (resume.html:96, 100).
-const SKILLS = [
-  { title: 'Front end', body: 'React, Next.js, JavaScript, TypeScript, HTML, CSS, Bootstrap' },
-  { title: 'Back end & DevOps', body: 'Node.js, Express, .NET, C#, C++, MongoDB, PostgreSQL, SQL, REST APIs, AWS, deployment' },
-  { title: 'Mobile & commerce', body: 'Flutter, React Native, Shopify, Liquid' },
-];
+// Derived from content/site.ts rather than restated here. The two used to be
+// separate lists and drifted: the portfolio grouped skills five ways while
+// this page still had the original three, so the same person's skills read
+// differently depending on which document you opened. One source now.
+const SKILLS = site.about.skills.map((group) => ({
+  title: group.title,
+  body: group.items.join(', '),
+}));
 
 // resume.html:111-122. Only the first row's date is numeric — only it carries
 // the tabular-number feature setting in the source (resume.html:113); the

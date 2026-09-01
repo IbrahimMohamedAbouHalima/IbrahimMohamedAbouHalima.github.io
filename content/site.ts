@@ -71,14 +71,33 @@ export const site = {
     // at-a-glance stats, and folding them into Front end would misrepresent
     // them. Shopify items are drawn from the work already described elsewhere
     // on the page — the Hamoo case study and the Shopify service card.
+    // Grouped rather than one flat run of tags, so a reader can see the shape
+    // of the stack. app/resume/page.tsx derives its own Skills section from
+    // this array, so the portfolio and the résumé cannot drift apart.
+    // Shopify items are drawn from work already described elsewhere on the
+    // page — the Hamoo case study and the Shopify service card.
     skills: [
       {
         title: "Front end",
-        items: ["React", "Next.js", "TypeScript", "JavaScript", "HTML", "CSS", "Bootstrap"],
+        items: ["React", "Next.js", "TypeScript", "JavaScript", "HTML", "CSS", "Tailwind", "Bootstrap"],
       },
       {
         title: "Back end",
-        items: ["Node.js", "Express", ".NET", "C#", "C++", "MongoDB", "PostgreSQL", "SQL", "REST APIs"],
+        items: [
+          "Node.js",
+          "Express",
+          ".NET",
+          "C#",
+          "C++",
+          "Java",
+          "Spring Boot",
+          "PHP",
+          "Laravel",
+          "MongoDB",
+          "PostgreSQL",
+          "SQL",
+          "REST APIs",
+        ],
       },
       {
         title: "Mobile",
@@ -86,7 +105,7 @@ export const site = {
       },
       {
         title: "DevOps",
-        items: ["AWS", "EC2", "S3", "Route 53", "CI/CD", "Deployment"],
+        items: ["AWS", "EC2", "S3", "SES", "Route 53", "GoDaddy", "InMotion Hosting", "CI/CD", "Deployment"],
       },
       {
         title: "Shopify",
