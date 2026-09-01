@@ -15,7 +15,7 @@
 // a deploy.
 
 import { createServer } from 'node:http';
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, statSync } from 'node:fs';
 import { join, extname } from 'node:path';
 import { createHash } from 'node:crypto';
 import { resumeText } from './resume-text.mjs';
@@ -37,9 +37,12 @@ const TYPES = {
 // Serve out/ the way GitHub Pages does, so the PDF is made from exactly the
 // bytes that ship.
 const server = createServer((req, res) => {
-  let p = decodeURIComponent(new URL(req.url, 'http://x').pathname);
+  const p = decodeURIComponent(new URL(req.url, 'http://x').pathname);
   let file = join(OUT, p);
-  if (!existsSync(file) || p.endsWith('/')) file = join(OUT, p, 'index.html');
+  // A route like /resume resolves to a DIRECTORY holding index.html
+  // (trailingSlash: true). Testing existence alone is not enough — the
+  // directory exists, and reading it as a file throws EISDIR.
+  if (existsSync(file) && statSync(file).isDirectory()) file = join(file, 'index.html');
   if (!existsSync(file)) file = join(OUT, `${p}.html`);
   if (!existsSync(file)) { res.writeHead(404).end('not found'); return; }
   res.writeHead(200, { 'content-type': TYPES[extname(file)] ?? 'application/octet-stream' });

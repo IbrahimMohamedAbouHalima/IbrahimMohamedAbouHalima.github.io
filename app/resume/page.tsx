@@ -52,8 +52,8 @@ const PROJECTS = [
 // resume.html:91-103. Titles carry a literal "&" — JSX re-escapes it to
 // "&amp;" when serialized, same as the source markup (resume.html:96, 100).
 const SKILLS = [
-  { title: 'Front end', body: 'React, Next.js, JavaScript, HTML, CSS' },
-  { title: 'Back end & DevOps', body: 'Node.js, Express, MongoDB, REST APIs, AWS, deployment' },
+  { title: 'Front end', body: 'React, Next.js, JavaScript, TypeScript, HTML, CSS, Bootstrap' },
+  { title: 'Back end & DevOps', body: 'Node.js, Express, .NET, C#, C++, MongoDB, PostgreSQL, SQL, REST APIs, AWS, deployment' },
   { title: 'Mobile & commerce', body: 'Flutter, React Native, Shopify, Liquid' },
 ];
 
