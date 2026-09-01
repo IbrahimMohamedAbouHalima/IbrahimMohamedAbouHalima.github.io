@@ -141,6 +141,16 @@ const CHECKS = [
     const target = /id="hero-end"/.test(html);
     return anchor && target;
   }],
+  ['favicon and touch icon ship and are linked', () => {
+    // create-next-app's stock Next.js logo shipped as this site's favicon for
+    // several commits before anyone noticed, so assert both that the files
+    // exist and that the document actually points at them.
+    const html = read('index.html');
+    return existsSync(join(OUT, 'favicon.ico'))
+      && existsSync(join(OUT, 'apple-icon.png'))
+      && /<link[^>]+rel="icon"[^>]+href="\/favicon\.ico/.test(html)
+      && /<link[^>]+rel="apple-touch-icon"/.test(html);
+  }],
   ['resume print styles ship', () => {
     // These rules ARE the downloaded PDF's design — the button opens the
     // browser print dialog rather than serving a generated file, so losing
