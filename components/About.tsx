@@ -59,14 +59,23 @@ export default function About() {
           >
             Skills
           </p>
-          <div className="flex flex-wrap gap-2">
-            {about.skills.map((skill) => (
-              <span
-                key={skill}
-                className="inline-flex items-center bg-neutral-100 px-[10px] py-[3px] text-[11px] tracking-[0.02em] text-neutral-800"
-              >
-                {skill}
-              </span>
+          <div className="flex flex-col gap-4">
+            {about.skills.map((group) => (
+              <div key={group.title}>
+                <p className="m-0 mb-2 text-[11px] tracking-[0.08em] uppercase text-accent-700">
+                  {group.title}
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {group.items.map((item) => (
+                    <span
+                      key={item}
+                      className="inline-flex items-center bg-neutral-100 px-[10px] py-[3px] text-[11px] tracking-[0.02em] text-neutral-800"
+                    >
+                      {item}
+                    </span>
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
         </div>

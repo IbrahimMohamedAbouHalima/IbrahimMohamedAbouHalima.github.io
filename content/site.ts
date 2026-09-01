@@ -65,27 +65,41 @@ export const site = {
       { label: "GitHub", href: "https://github.com/IbrahimMohamedAbouHalima" },
       { label: "Download résumé", href: "/resume.pdf" },
     ] as { label: string; href: string }[],
+    // Grouped rather than one flat run of tags, so a reader can see the shape
+    // of the stack instead of scanning 19 chips. Mobile is its own group:
+    // React Native and Flutter are a third of the "3 platforms" claim in the
+    // at-a-glance stats, and folding them into Front end would misrepresent
+    // them. Shopify items are drawn from the work already described elsewhere
+    // on the page — the Hamoo case study and the Shopify service card.
     skills: [
-      "React",
-      "Next.js",
-      "Node.js",
-      "Express",
-      ".NET",
-      "C#",
-      "C++",
-      "MongoDB",
-      "PostgreSQL",
-      "SQL",
-      "React Native",
-      "Flutter",
-      "AWS",
-      "DevOps",
-      "Shopify",
-      "JavaScript",
-      "TypeScript",
-      "Bootstrap",
-      "REST APIs",
-    ] as string[],
+      {
+        title: "Front end",
+        items: ["React", "Next.js", "TypeScript", "JavaScript", "HTML", "CSS", "Bootstrap"],
+      },
+      {
+        title: "Back end",
+        items: ["Node.js", "Express", ".NET", "C#", "C++", "MongoDB", "PostgreSQL", "SQL", "REST APIs"],
+      },
+      {
+        title: "Mobile",
+        items: ["React Native", "Flutter"],
+      },
+      {
+        title: "DevOps",
+        items: ["AWS", "EC2", "S3", "Route 53", "CI/CD", "Deployment"],
+      },
+      {
+        title: "Shopify",
+        items: [
+          "Theme editing",
+          "Liquid",
+          "Payment integration",
+          "Checkout configuration",
+          "Catalogue structure",
+          "App integration",
+        ],
+      },
+    ] as { title: string; items: string[] }[],
     timeline: [
       {
         role: "Full Stack Developer — Mubaader Services",
