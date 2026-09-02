@@ -33,6 +33,8 @@ export default function ProjectCard({ project, index }: { project: Project; inde
             alt={`${project.title} screenshot`}
             width={1600}
             height={900}
+            loading="lazy"
+            decoding="async"
           />
         ) : (
           <div className={styles.placeholder}>{project.domain}</div>

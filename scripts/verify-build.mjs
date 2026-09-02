@@ -166,6 +166,30 @@ const CHECKS = [
       // the work header offsets by the token instead of a magic number
       && /padding:\s*calc\(var\(--nav-h\)/.test(css);
   }],
+  ['share preview card is complete', () => {
+    // A missing og:image degrades silently — the page looks fine and only the
+    // link previews people receive are broken, which the owner never sees.
+    const html = read('index.html');
+    const og = (p) => new RegExp(`<meta property="og:${p}" content="[^"]+"`).test(html);
+    const imgSrc = html.match(/<meta property="og:image" content="([^"]+)"/)?.[1];
+    return og('title') && og('description') && og('image') && og('url')
+      && /<meta name="twitter:card" content="summary_large_image"/.test(html)
+      // absolute url, or scrapers cannot fetch it
+      && !!imgSrc?.startsWith('http')
+      // and the file it points at actually shipped
+      && existsSync(join(OUT, new URL(imgSrc).pathname.split('/').pop().split('?')[0]));
+  }],
+  ['below-fold images are lazy, hero is not', () => {
+    const html = read('index.html');
+    const imgs = [...html.matchAll(/<img[^>]+>/g)].map((m) => m[0]);
+    const lazy = imgs.filter((t) => t.includes('loading="lazy"'));
+    // the portrait is above the fold and must stay eager; the six screenshots
+    // below it should not compete with it for the first paint
+    return imgs.length === 7 && lazy.length === 6
+      && !imgs.find((t) => t.includes('hero-portrait'))?.includes('loading="lazy"');
+  }],
+  ['404 is styled and offers a way back', () =>
+    existsSync(join(OUT, '404.html')) && read('404.html').includes('href="/"')],
   ['resume print styles ship', () => {
     // These rules ARE the downloaded PDF's design — the button opens the
     // browser print dialog rather than serving a generated file, so losing

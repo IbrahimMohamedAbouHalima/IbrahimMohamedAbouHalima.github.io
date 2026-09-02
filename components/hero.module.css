@@ -174,8 +174,33 @@
 }
 
 .hint {
-  animation-name: hint-fade;
-  animation-timing-function: linear;
+  /* Two animations: the fade rides the scroll timeline, the nudge runs on the
+     ordinary document timeline. Listed in the same order in every property.
+     They touch different properties — opacity vs translate — so neither
+     fights the other. */
+  animation-name: hint-fade, hint-nudge;
+  animation-timing-function: linear, ease-in-out;
+  animation-timeline: --hero, auto;
+  animation-duration: auto, 1.7s;
+  /* Three nudges, then it rests. A hint that never stops is a nag, and the
+     fade above removes it entirely as soon as the visitor actually scrolls. */
+  animation-iteration-count: 1, 3;
+}
+
+/* A downward tug, twice per cycle, settling back. Uses `translate` rather than
+   `transform` so it cannot collide with anything transform-based later. */
+@keyframes hint-nudge {
+  0%, 55%, 100% { translate: 0 0; }
+  70% { translate: 0 0.5em; }
+  85% { translate: 0 0.15em; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hint {
+    animation-name: hint-fade;
+    animation-timeline: --hero;
+    animation-iteration-count: 1;
+  }
 }
 
 .nav {
@@ -528,7 +553,11 @@
   .nav { opacity: 1; pointer-events: auto; animation-name: none; }
 }
 
-@media (prefers-reduced-motion: reduce) {
+/* Phones get the same static state as reduced-motion visitors. Pinning three
+   screen-heights to zoom a mockup is worst on the smallest screen, and it is
+   the first thing a visitor meets — the work track was un-jacked below 641px
+   for the same reason. Comma-separated so this is one block, not a copy. */
+@media (max-width: 640px), (prefers-reduced-motion: reduce) {
   .stage { height: 100svh; view-timeline: none; }
   .column { font-size: calc(var(--fallback-w) / 64); animation-name: none; }
   .monitor { width: var(--fallback-w); animation-name: none; }
