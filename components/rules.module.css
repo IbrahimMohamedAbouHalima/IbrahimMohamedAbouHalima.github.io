@@ -1,0 +1,90 @@
+/* The design system's rules, drawing themselves as they enter.
+
+   This is the site's own motif animating rather than a generic fade: 2px
+   dividers between every section, 2px borders boxing every service card, and
+   a 2px gap that makes the card row read as one ruled grid. Shared by
+   app/page.tsx (the dividers) and components/Services.tsx (the card borders).
+
+   Two techniques, because the shapes differ:
+
+   - A horizontal rule is 2px tall, so `scale: 0 1` stretches it along its
+     length without touching its thickness. Correct and cheap.
+   - A bordered BOX cannot use that: scaling x would squash its left and right
+     borders to sub-pixel and they would shimmer or vanish. The box is revealed
+     by an animated `clip-path` inset instead, which moves an edge across it
+     and leaves every border at its true 2px.
+
+   Timelines are self-referencing: each rule declares `--rule` on itself and
+   animates against it. Name lookup resolves to the nearest declaring element,
+   which is the element itself, so five dividers do not collide with one
+   another. This is safe precisely because there is no `timeline-scope` widening
+   the name — that is what made `--hero` global and killable earlier. */
+
+.divider {
+  view-timeline: --rule block;
+  transform-origin: left;
+}
+
+.card {
+  position: relative;
+}
+
+/* The border moves onto a pseudo-element so it can be revealed independently
+   of the card's content and background, which stay put. */
+.card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 2px solid var(--color-divider);
+  pointer-events: none;
+}
+
+/* ── the draw ──────────────────────────────────────────────────────────────
+   Start states live ONLY in here. As base rules a scaled-to-zero divider and
+   a fully-clipped border would simply be missing structure on any engine
+   without scroll-driven animations — the same trap the hero and the stat
+   reveal each guard against. No support must mean "already drawn". */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .divider {
+      animation: rule-draw linear both;
+      animation-timeline: --rule;
+      /* `cover`, not `entry`: a 2px subject has essentially no entry range of
+         its own, so an entry-ranged animation would complete instantly. */
+      animation-range: cover 15% cover 45%;
+    }
+
+    .cards {
+      view-timeline: --cards block;
+    }
+
+    .card::after {
+      animation: border-draw linear both;
+      animation-timeline: --cards;
+    }
+
+    /* Left to right across the row, matching the reading order. */
+    .card:nth-child(1)::after { animation-range: cover 12% cover 30%; }
+    .card:nth-child(2)::after { animation-range: cover 17% cover 35%; }
+    .card:nth-child(3)::after { animation-range: cover 22% cover 40%; }
+    .card:nth-child(4)::after { animation-range: cover 27% cover 45%; }
+  }
+}
+
+@keyframes rule-draw {
+  from {
+    scale: 0 1;
+  }
+  to {
+    scale: 1 1;
+  }
+}
+
+@keyframes border-draw {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}

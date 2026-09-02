@@ -41,6 +41,35 @@ const ABOUT_FIRST_SENTENCE = 'Full-stack, DevOps, mobile and Shopify developer i
 // route link (including the not-yet-existing /resume) along with it.
 const ASSET_SKIP = new Set();
 
+// Every scroll-driven start state on this site hides something: numerals sit
+// below their mask, rules are scaled to zero, borders are clipped away. If any
+// of those bindings were reachable without scroll-driven animation support,
+// Firefox would render missing content rather than a missing flourish. This
+// answers "is every occurrence of `needle` inside an @supports block that
+// tests for the feature?"
+const guardedBySupports = (css, needle) => {
+  const blocks = [];
+  for (let i = 0; ; ) {
+    const m = /@supports[^{]*animation-timeline[^{]*\{/.exec(css.slice(i));
+    if (!m) break;
+    const start = i + m.index;
+    let j = start + m[0].length, depth = 1;
+    while (depth && j < css.length) {
+      if (css[j] === '{') depth++;
+      else if (css[j] === '}') depth--;
+      j++;
+    }
+    blocks.push([start, j]);
+    i = j;
+  }
+  // Plain scan rather than a built regex: every needle is a literal CSS
+  // declaration, so escaping it would only be a chance to get the escaping
+  // wrong.
+  const hits = [];
+  for (let at = css.indexOf(needle); at !== -1; at = css.indexOf(needle, at + 1)) hits.push(at);
+  return hits.length > 0 && hits.every((at) => blocks.some(([a, b]) => at > a && at < b));
+};
+
 const CHECKS = [
   ['index.html exists', () => existsSync(join(OUT, 'index.html'))],
   ['_next assets emitted', () => existsSync(join(OUT, '_next'))],
@@ -212,28 +241,24 @@ const CHECKS = [
     if ((css.match(/view-timeline:--glance/g) || []).length !== 1) return false;
     if (!css.includes('overflow:hidden')) return false;
 
-    // THE important one. The numerals start translated fully below their mask,
-    // so if that binding were reachable without scroll-driven animation support
-    // Firefox would render four permanently invisible numbers. Every
-    // `animation-timeline:--glance` must sit inside an @supports block that
-    // tests for the feature.
-    const blocks = [];
-    for (let i = 0; ; ) {
-      const m = /@supports[^{]*animation-timeline[^{]*\{/.exec(css.slice(i));
-      if (!m) break;
-      const start = i + m.index;
-      let j = i + m.index + m[0].length, depth = 1;
-      while (depth && j < css.length) {
-        if (css[j] === '{') depth++;
-        else if (css[j] === '}') depth--;
-        j++;
-      }
-      blocks.push([start, j]);
-      i = j;
-    }
-    const guarded = (at) => blocks.some(([a, b]) => at > a && at < b);
-    return [...css.matchAll(/animation-timeline:--glance/g)]
-      .every((m) => guarded(m.index));
+    // THE important one — see guardedBySupports above.
+    return guardedBySupports(css, 'animation-timeline:--glance');
+  }],
+  ['section rules draw themselves, and cannot go missing', () => {
+    const html = read('index.html');
+    const css = [...html.matchAll(/href="\/(_next\/static\/[^"]+\.css)"/g)]
+      .map((m) => read(m[1])).join('');
+    // The card border moved onto a pseudo-element so it can be revealed
+    // without the content or background moving with it.
+    //
+    // Match the @keyframes RULE, not the bare name: CSS Modules mangles these
+    // to `rules-module__hash__border-draw`, so a substring test also matches
+    // any longer name and cannot fail — which is exactly how the first version
+    // of this check passed a rename that should have broken it.
+    return /@keyframes[^{]*rule-draw[^{]*\{/.test(css)
+      && /@keyframes[^{]*border-draw[^{]*\{/.test(css)
+      && guardedBySupports(css, 'animation-timeline:--rule')
+      && guardedBySupports(css, 'animation-timeline:--cards');
   }],
   ['404 is styled and offers a way back', () =>
     existsSync(join(OUT, '404.html')) && read('404.html').includes('href="/"')],

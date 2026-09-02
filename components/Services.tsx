@@ -1,4 +1,5 @@
 import { site } from '@/content/site';
+import rules from './rules.module.css';
 
 // Ported from index.html:177-202. Card typography (.card-kicker/.card-title/
 // .card-body) reconstructed from the old design system's
@@ -20,11 +21,11 @@ export default function Services() {
         Services
       </span>
 
-      <div className="grid grid-cols-1 gap-[2px] min-[640px]:grid-cols-2 min-[1000px]:grid-cols-4">
+      <div className={`${rules.cards} grid grid-cols-1 gap-[2px] min-[640px]:grid-cols-2 min-[1000px]:grid-cols-4`}>
         {site.services.items.map((item, i) => (
           <div
             key={item.title}
-            className="flex flex-col gap-2 bg-surface p-7 [border:2px_solid_var(--color-divider)]"
+            className={`${rules.card} flex flex-col gap-2 bg-surface p-7`}
           >
             <p className="text-[10px] tracking-[0.1em] uppercase text-accent">
               {String(i + 1).padStart(2, '0')}

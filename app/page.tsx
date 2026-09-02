@@ -6,11 +6,15 @@ import Services from '@/components/Services';
 import About from '@/components/About';
 import Contact from '@/components/Contact';
 import { site } from '@/content/site';
+import rules from '@/components/rules.module.css';
 
 // 2px divider bar at section joints (index.html:95, 116, 175, 204) — same
 // treatment as app/resume/page.tsx's local Divider.
+// The rule draws itself as it scrolls in — see components/rules.module.css.
+// Every divider on the page shares that behaviour, which is what ties the
+// sections together rather than animating one of them in isolation.
 function Divider() {
-  return <hr className="m-0 [border-top:2px_solid_var(--color-divider)]" />;
+  return <hr className={`${rules.divider} m-0 [border-top:2px_solid_var(--color-divider)]`} />;
 }
 
 // WorkTrack is deliberately NOT nested inside the max-w-[1200px] wrapper
