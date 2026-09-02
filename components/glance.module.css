@@ -1,0 +1,84 @@
+/* Masked, staggered reveal for the at-a-glance stats.
+
+   Each numeral rises into view behind a fixed hard edge — type setting itself.
+   The mask is `overflow: hidden` on a wrapper with `translate` on the numeral
+   inside, NOT an animated clip-path: with both on the same element the mask
+   travels with the content and the edge goes soft, and clip-path does not
+   composite the way translate does.
+
+   The stagger is four offset `animation-range` windows against one shared
+   timeline, so there are no delays and no JavaScript — the cascade is tied to
+   scroll position rather than wall-clock time, and it replays correctly when
+   the visitor scrolls back up.
+
+   The timeline is named `--glance`. It must never be `--hero` or `--work`:
+   a duplicate name makes lookup ambiguous and silently kills the other
+   animation, which has already happened twice in this project. */
+
+.section {
+  view-timeline: --glance block;
+}
+
+/* The fixed edge the numeral rises past. */
+.numberMask {
+  display: block;
+  overflow: hidden;
+}
+
+/* ── the reveal ────────────────────────────────────────────────────────────
+   The hidden start state lives ONLY in here. As a base rule it would leave
+   four permanently invisible numerals behind the mask on any engine without
+   scroll-driven animations — Firefox stable today. The failure mode for this
+   effect is missing content, not a missing flourish, so absence of support
+   must mean "no animation", never "no numbers". */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .number {
+      animation: stat-rise linear both;
+      animation-timeline: --glance;
+    }
+
+    .label {
+      animation: stat-fade linear both;
+      animation-timeline: --glance;
+    }
+
+    /* Ranged against `cover`, not `entry`. `entry` spans only the subject's own
+       height — this section is about 200px tall, so the whole cascade finished
+       inside a couple hundred pixels of scroll and read as a flicker. `cover`
+       spans viewport + subject (~1000px here), which gives the stagger room to
+       be seen. Measured: the four now start ~50px apart and the last finishes
+       around 370px in.
+
+       The 5% offsets produce the cascade; the 17% spans stop each numeral
+       snapping. */
+    .item:nth-child(1) .number { animation-range: cover 5% cover 22%; }
+    .item:nth-child(2) .number { animation-range: cover 10% cover 27%; }
+    .item:nth-child(3) .number { animation-range: cover 15% cover 32%; }
+    .item:nth-child(4) .number { animation-range: cover 20% cover 37%; }
+
+    /* Labels trail their own numeral, so each pair reads as one arrival. */
+    .item:nth-child(1) .label { animation-range: cover 12% cover 26%; }
+    .item:nth-child(2) .label { animation-range: cover 17% cover 31%; }
+    .item:nth-child(3) .label { animation-range: cover 22% cover 36%; }
+    .item:nth-child(4) .label { animation-range: cover 27% cover 41%; }
+  }
+}
+
+@keyframes stat-rise {
+  from {
+    translate: 0 100%;
+  }
+  to {
+    translate: 0 0;
+  }
+}
+
+@keyframes stat-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

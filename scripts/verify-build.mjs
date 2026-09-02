@@ -202,6 +202,39 @@ const CHECKS = [
     return pairs.every(([tag]) => tag.includes('tabindex="-1"') && tag.includes('aria-hidden="true"'))
       && hrefs.every((h) => h.startsWith('https://'));
   }],
+  ['stats reveal cannot leave content invisible', () => {
+    const html = read('index.html');
+    const css = [...html.matchAll(/href="\/(_next\/static\/[^"]+\.css)"/g)]
+      .map((m) => read(m[1])).join('');
+
+    // Timeline name must be unique: a duplicate makes lookup ambiguous and
+    // silently kills the other animation. --hero and --work are checked above.
+    if ((css.match(/view-timeline:--glance/g) || []).length !== 1) return false;
+    if (!css.includes('overflow:hidden')) return false;
+
+    // THE important one. The numerals start translated fully below their mask,
+    // so if that binding were reachable without scroll-driven animation support
+    // Firefox would render four permanently invisible numbers. Every
+    // `animation-timeline:--glance` must sit inside an @supports block that
+    // tests for the feature.
+    const blocks = [];
+    for (let i = 0; ; ) {
+      const m = /@supports[^{]*animation-timeline[^{]*\{/.exec(css.slice(i));
+      if (!m) break;
+      const start = i + m.index;
+      let j = i + m.index + m[0].length, depth = 1;
+      while (depth && j < css.length) {
+        if (css[j] === '{') depth++;
+        else if (css[j] === '}') depth--;
+        j++;
+      }
+      blocks.push([start, j]);
+      i = j;
+    }
+    const guarded = (at) => blocks.some(([a, b]) => at > a && at < b);
+    return [...css.matchAll(/animation-timeline:--glance/g)]
+      .every((m) => guarded(m.index));
+  }],
   ['404 is styled and offers a way back', () =>
     existsSync(join(OUT, '404.html')) && read('404.html').includes('href="/"')],
   ['resume print styles ship', () => {
