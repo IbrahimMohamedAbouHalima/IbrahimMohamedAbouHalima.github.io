@@ -4,7 +4,7 @@
    section is pinned; when the cards run out, normal vertical scrolling
    resumes. Same as the old site, which did it from a scroll handler.
 
-   Structured as progressive enhancement, in two layers:
+   Structured as progressive enhancement. Three behaviours fall out of it:
 
    1. BASE (everything below, outside the @supports) is a natively scrolling
       scroll-snap track. This is what Firefox gets — it has no scroll-driven
@@ -12,9 +12,15 @@
       gets, since scroll-jacking is exactly what that preference is about.
       It is fully keyboard and touch operable on its own.
 
-   2. ENHANCED (the @supports block at the bottom) pins the section and
+   2. ENHANCED (the @supports block near the bottom) pins the section and
       translates the track from a named view-timeline. Still no scroll
-      listener, no ResizeObserver, no rAF — the constraint holds.
+      listener, no ResizeObserver, no rAF — the constraint holds. Scoped to
+      641px and up: hijacking vertical scroll is worst on the smallest
+      screens, and a nested horizontal scroller fights the page there.
+
+   3. MOBILE (the last block) stacks the cards and lets the page scroll
+      normally. The enhancement does not apply below 641px, so this retargets
+      the base rather than overriding the pinned layer.
 
    The old site made the same trade: its scroll handler set the track back to
    `overflow-x: auto` under prefers-reduced-motion.
@@ -262,7 +268,7 @@
    and reduced-motion users keep the scroll-snap track defined above. */
 
 @supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
+  @media (prefers-reduced-motion: no-preference) and (min-width: 641px) {
     .stage {
       position: relative;
       /* One pixel of page scroll = one pixel of track travel, plus the
@@ -357,5 +363,37 @@
   }
   to {
     transform: translateY(calc(-1em * (var(--count) - 1)));
+  }
+}
+
+
+/* ── mobile: stack instead of scroll sideways ──────────────────────────────
+   The pinned horizontal track is scoped to 641px and up. Below that a phone
+   gets plain vertical scrolling: no pinning, no sideways swipe, no nested
+   scroll container fighting the page. Cards become full-width rows separated
+   by the design system's 2px rule, since a left border reads as a column
+   divider and makes no sense in a stack. */
+@media (max-width: 640px) {
+  .track {
+    grid-auto-flow: row;
+    grid-auto-columns: auto;
+    overflow-x: visible;
+    scroll-snap-type: none;
+    gap: 40px;
+    padding-bottom: 8px;
+  }
+
+  .card {
+    scroll-snap-align: none;
+    border-left: 0;
+    border-top: 2px solid var(--color-divider);
+    padding: 24px 0 0;
+  }
+
+  /* The counter reports progress through a horizontal track that no longer
+     exists here. Each card already carries its own 01-06 kicker, so nothing
+     is lost by dropping it. */
+  .counter {
+    display: none;
   }
 }
