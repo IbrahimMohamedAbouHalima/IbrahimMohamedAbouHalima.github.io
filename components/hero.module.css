@@ -634,3 +634,64 @@
 
   .navLink { font-size: 11.5px; }
 }
+
+/* ── mobile: a portrait hero, not a shrunken landscape mockup ──────────────
+   On a phone the monitor chrome is already hidden (the static block above),
+   so what remains is the screen's content — and it was still shaped like a
+   16:10 desktop window, sat in the middle of a tall viewport with its two
+   columns crushed side by side.
+
+   Worse, every size inside the monitor is `em` off --fallback-w / 64. At
+   375px that base is about 5px, so the headline and body rendered at a few
+   pixels tall. Here the mockup stops being a scale model of a screen and
+   becomes the hero itself, at real type sizes, stacked down the page. */
+@media (max-width: 640px) {
+  /* the pane must grow with the content: it is a fixed 100svh with
+     overflow:hidden for the pinned desktop path, which would clip a stack */
+  .stage { height: auto; }
+
+  .pane {
+    position: static;
+    height: auto;
+    min-height: 100svh;
+    overflow: visible;
+    align-items: center;
+    box-sizing: border-box;
+    padding: calc(var(--nav-h) + 32px) var(--gutter) 56px;
+  }
+
+  .column {
+    /* a real base, not --fallback-w/64 — every em inside keys off this */
+    font-size: 16px;
+    width: 100%;
+    margin-top: 0;
+  }
+
+  .monitor { width: 100%; }
+
+  /* no longer a window: no fixed ratio, no inner frame padding, nothing clipped */
+  .screen {
+    aspect-ratio: auto;
+    padding: 0;
+    overflow: visible;
+  }
+
+  .screenBody {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.8em;
+    padding: 0;
+    align-items: start;
+  }
+
+  .headline { font-size: 2.35em; }
+
+  /* Capped so the photo cannot push the call to action below the fold on a
+     short phone; 4:5 keeps it portrait rather than the desktop crop. */
+  .portrait img {
+    aspect-ratio: 4 / 5;
+    max-height: 42svh;
+    width: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+}
