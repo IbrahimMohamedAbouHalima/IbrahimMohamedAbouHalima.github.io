@@ -25,20 +25,35 @@ export default function ProjectCard({ project, index }: { project: Project; inde
       </ul>
 
       <figure className={styles.figure}>
-        {project.image ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            className={styles.image}
-            src={project.image}
-            alt={`${project.title} screenshot`}
-            width={1600}
-            height={900}
-            loading="lazy"
-            decoding="async"
-          />
-        ) : (
-          <div className={styles.placeholder}>{project.domain}</div>
-        )}
+        {/* The screenshot links to the live site. The domain link in .actions
+            below already points at the same url, so this one is deliberately
+            kept out of the accessibility tree and the tab order — otherwise
+            every card would offer the same destination twice, once with no
+            useful label. Mouse and touch get the larger target; keyboard and
+            screen readers get the labelled text link. */}
+        <a
+          className={styles.imageLink}
+          href={project.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          tabIndex={-1}
+          aria-hidden="true"
+        >
+          {project.image ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              className={styles.image}
+              src={project.image}
+              alt={`${project.title} screenshot`}
+              width={1600}
+              height={900}
+              loading="lazy"
+              decoding="async"
+            />
+          ) : (
+            <div className={styles.placeholder}>{project.domain}</div>
+          )}
+        </a>
       </figure>
 
       <div className={styles.actions}>

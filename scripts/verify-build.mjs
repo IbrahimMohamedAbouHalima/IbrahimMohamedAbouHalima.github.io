@@ -188,6 +188,20 @@ const CHECKS = [
     return imgs.length === 7 && lazy.length === 6
       && !imgs.find((t) => t.includes('hero-portrait'))?.includes('loading="lazy"');
   }],
+  ['every screenshot links to its own live site', () => {
+    // Six anchors, each wrapping one image, each pointing at that project's
+    // url — not all at the same one, which is the easy way for this to rot
+    // when a project is added by copy-paste.
+    const html = read('index.html');
+    const pairs = [...html.matchAll(/<a class="[^"]*imageLink[^"]*"[^>]*href="([^"]+)"[^>]*>(.*?)<\/a>/gs)];
+    if (pairs.length !== 6) return false;
+    const hrefs = pairs.map((m) => m[1]);
+    if (new Set(hrefs).size !== 6) return false;
+    // and it must stay out of the tab order — the labelled text link in
+    // .actions already offers the same destination
+    return pairs.every(([tag]) => tag.includes('tabindex="-1"') && tag.includes('aria-hidden="true"'))
+      && hrefs.every((h) => h.startsWith('https://'));
+  }],
   ['404 is styled and offers a way back', () =>
     existsSync(join(OUT, '404.html')) && read('404.html').includes('href="/"')],
   ['resume print styles ship', () => {
@@ -222,7 +236,7 @@ const CHECKS = [
 let failed = 0;
 for (const [name, fn] of CHECKS) {
   let ok = false;
-  try { ok = fn(); } catch (e) { ok = false; }
+  try { ok = fn(); } catch { ok = false; }
   console.log(`${ok ? 'PASS' : 'FAIL'}  ${name}`);
   if (!ok) failed++;
 }

@@ -161,6 +161,30 @@
   margin: 24px 0 0;
 }
 
+/* Wraps the screenshot so the whole thing is a target for the live site.
+   Block so it does not add inline descender space under the image, and it
+   must carry the figure's height in the pinned desktop layout where .figure
+   is a flex child. */
+.imageLink {
+  display: block;
+  height: 100%;
+  outline-offset: -2px;
+}
+
+/* The only signal that the shot is clickable, so it should read clearly
+   without turning into a hover toy: the accent outline the design system
+   already uses for focus, plus a slight lift in contrast. */
+.imageLink:hover .image,
+.imageLink:hover .placeholder {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -2px;
+}
+
+.imageLink:active .image,
+.imageLink:active .placeholder {
+  opacity: 0.92;
+}
+
 .image {
   display: block;
   width: 100%;
