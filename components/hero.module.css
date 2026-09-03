@@ -117,7 +117,10 @@
 
 .backdrop {
   position: absolute;
-  inset: 0;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
   background: repeating-linear-gradient(
     to right,
     color-mix(in srgb, var(--color-text) 14%, transparent) 0 2px,
@@ -165,12 +168,36 @@
   animation-timing-function: var(--smoothstep);
 }
 
-/* frame, stand and backdrop fade out as the monitor fills the viewport */
+/* frame and stand fade out as the monitor fills the viewport */
 .frame,
-.stand,
-.backdrop {
+.stand {
   animation-name: chrome-fade;
   animation-timing-function: linear;
+}
+
+/* The backdrop fades like the rest of the chrome, and also drifts sideways —
+   parallax. It is a field of VERTICAL rules, so only horizontal movement is
+   visible; a vertical drift would be invisible by construction.
+
+   Two animations on one element: the fade is linear (an eased fade on a scroll
+   timeline just reads as uneven), the drift is eased so it settles. Different
+   properties — opacity vs translate — so neither overwrites the other.
+
+   Overscanned by 6% each side so the drift cannot expose an edge. */
+.backdrop {
+  left: -6%;
+  right: -6%;
+  animation-name: chrome-fade, backdrop-drift;
+  animation-timing-function: linear, var(--ease-out);
+}
+
+@keyframes backdrop-drift {
+  from {
+    translate: 0 0;
+  }
+  to {
+    translate: -4% 0;
+  }
 }
 
 .hint {

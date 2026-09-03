@@ -47,7 +47,7 @@
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
     .divider {
-      animation: rule-draw linear both;
+      animation: rule-draw var(--ease-out) both;
       animation-timeline: --rule;
       /* `cover`, not `entry`: a 2px subject has essentially no entry range of
          its own, so an entry-ranged animation would complete instantly. */
@@ -59,7 +59,7 @@
     }
 
     .card::after {
-      animation: border-draw linear both;
+      animation: border-draw var(--ease-out) both;
       animation-timeline: --cards;
     }
 

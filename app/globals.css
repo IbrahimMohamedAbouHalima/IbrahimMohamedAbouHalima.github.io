@@ -49,6 +49,18 @@
 /* Not Tailwind token types — plain custom properties, same values as the
    design system. --color-divider is referenced directly in arbitrary values. */
 :root {
+  /* Arrival curve for scroll-driven MOVEMENT — easeOutCubic. Motion that
+     stops at constant speed reads as mechanical (Zajno's first principle:
+     nothing in nature moves linearly), so anything that travels gets this and
+     settles into place instead of halting.
+
+     Deliberately NOT applied to opacity fades or to the work track's
+     translation. On a scroll timeline the "time" is the reader's own scroll,
+     so easing a fade just makes it uneven, and easing the track would make the
+     cards stop tracking the finger. Movement that arrives: eased. Movement
+     that tracks: linear. */
+  --ease-out: cubic-bezier(0.33, 1, 0.68, 1);
+
   /* Height of the fixed header. Global because three places depend on it:
      the hero's zoom end state, the work section's top offset, and
      scroll-margin-top for anchor landings. It was a 76px literal in each,

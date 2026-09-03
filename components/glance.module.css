@@ -34,7 +34,7 @@
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
     .number {
-      animation: stat-rise linear both;
+      animation: stat-rise var(--ease-out) both;
       animation-timeline: --glance;
     }
 
