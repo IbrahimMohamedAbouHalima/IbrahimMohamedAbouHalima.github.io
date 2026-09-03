@@ -421,3 +421,84 @@
     display: none;
   }
 }
+
+/* ── mobile: arrival and depth for the stacked cards ───────────────────────
+   Stacking fixed the scroll-jacking but left the section motionless — on
+   desktop cards arrive by sliding in from the track, and nothing replaced
+   that on a phone.
+
+   Each card carries its own `--card` timeline and animates against itself, so
+   the stagger comes from where the card actually is on screen rather than a
+   fixed delay: they arrive as you reach them, however fast you scroll. Same
+   self-referencing pattern as the dividers' `--rule`, and safe for the same
+   reason — no timeline-scope widens the name, so six declarations cannot
+   collide.
+
+   Two animations per card rather than one, keeping the split used elsewhere:
+   the travel is eased so it settles, the fade stays linear because an eased
+   fade on a scroll timeline reads as uneven.
+
+   The screenshot drifts inside its frame — parallax, the one principle from
+   motion.zajno.com the site was not using. The image is 120% of the frame's
+   height and travels exactly its own overscan (16.667% of itself), so the
+   frame is filled at both ends of the range and no edge is ever exposed.
+   Linear, because a parallax that eases stops tracking the scroll. */
+@media (max-width: 640px) {
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .card {
+        view-timeline: --card block;
+        animation:
+          card-rise var(--ease-out) both,
+          card-fade linear both;
+        animation-timeline: --card, --card;
+        animation-range: cover 6% cover 32%, cover 6% cover 26%;
+      }
+
+      /* the window the screenshot drifts behind */
+      .figure {
+        aspect-ratio: 16 / 9;
+        overflow: hidden;
+      }
+
+      .image {
+        aspect-ratio: auto;
+        height: 120%;
+        animation: shot-parallax linear both;
+        animation-timeline: --card;
+        /* the whole pass, so the drift tracks the card the entire way up */
+        animation-range: cover 0% cover 100%;
+      }
+    }
+  }
+}
+
+@keyframes card-rise {
+  from {
+    translate: 0 2.5rem;
+  }
+  to {
+    translate: 0 0;
+  }
+}
+
+@keyframes card-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 120% tall image, so 20% of the frame overscans — which is 16.667% of the
+   image's own height. Travelling exactly that keeps the frame full at 0% and
+   at 100%. */
+@keyframes shot-parallax {
+  from {
+    translate: 0 0;
+  }
+  to {
+    translate: 0 -16.6667%;
+  }
+}

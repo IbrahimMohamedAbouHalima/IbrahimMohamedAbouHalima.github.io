@@ -260,6 +260,17 @@ const CHECKS = [
       && guardedBySupports(css, 'animation-timeline:--rule')
       && guardedBySupports(css, 'animation-timeline:--cards');
   }],
+  ['mobile card arrival cannot hide the projects', () => {
+    const html = read('index.html');
+    const css = [...html.matchAll(/href="\/(_next\/static\/[^"]+\.css)"/g)]
+      .map((m) => read(m[1])).join('');
+    // The cards start at opacity 0 and translated down. Unguarded, that would
+    // hide the entire portfolio on Firefox — the worst failure on the site, so
+    // it gets its own assertion rather than riding on the work-track check.
+    return /@keyframes[^{]*card-rise[^{]*\{/.test(css)
+      && /@keyframes[^{]*shot-parallax[^{]*\{/.test(css)
+      && guardedBySupports(css, 'animation-timeline:--card');
+  }],
   ['404 is styled and offers a way back', () =>
     existsSync(join(OUT, '404.html')) && read('404.html').includes('href="/"')],
   ['resume print styles ship', () => {
