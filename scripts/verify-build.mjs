@@ -271,6 +271,16 @@ const CHECKS = [
       && /@keyframes[^{]*shot-parallax[^{]*\{/.test(css)
       && guardedBySupports(css, 'animation-timeline:--card');
   }],
+  ['about section reveal cannot hide the bio or skills', () => {
+    const html = read('index.html');
+    const css = [...html.matchAll(/href="\/(_next\/static\/[^"]+\.css)"/g)]
+      .map((m) => read(m[1])).join('');
+    // Fourteen elements start at opacity 0 here — the bio, every skill group
+    // and every experience row. Unguarded that blanks the section.
+    return /@keyframes[^{]*about-rise[^{]*\{/.test(css)
+      && /@keyframes[^{]*about-rule[^{]*\{/.test(css)
+      && guardedBySupports(css, 'animation-timeline:--reveal');
+  }],
   ['404 is styled and offers a way back', () =>
     existsSync(join(OUT, '404.html')) && read('404.html').includes('href="/"')],
   ['resume print styles ship', () => {

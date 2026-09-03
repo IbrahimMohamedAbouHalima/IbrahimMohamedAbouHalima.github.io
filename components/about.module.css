@@ -1,0 +1,90 @@
+/* Arrival for the About column, the skill groups and the experience rows.
+
+   Every revealed element carries its OWN `--reveal` timeline and animates
+   against itself. That matters here more than anywhere else on the site: this
+   section is tall, so a single section-level timeline would fire the bottom
+   rows based on where the *section* sits rather than where the row does — the
+   experience list would animate while still below the fold. Self-referencing
+   means each piece arrives exactly as it enters, and the cascade falls out of
+   the layout instead of being hardcoded as delays.
+
+   Same pattern as the dividers' `--rule` and the mobile cards' `--card`, safe
+   for the same reason: no `timeline-scope` widens the name, so every
+   declaration resolves to its own element.
+
+   Deliberately NOT applied to the ABOUT / SKILLS / EXPERIENCE kickers. Leaving
+   the section labels static gives the content something to arrive against; if
+   everything moves, nothing reads as arriving.
+
+   Travel is small — 12px. Fifteen elements each making a grand entrance would
+   be a showreel; this should read as the section settling. */
+
+.row {
+  position: relative;
+}
+
+/* The row's top rule moves onto a pseudo-element so it can draw independently
+   of the row's own fade. A 2px horizontal rule scales along its length without
+   distorting, so scaleX is correct here — unlike the service card's box
+   border, which needed a clip. */
+.row::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  border-top: 2px solid var(--color-divider);
+  transform-origin: left;
+}
+
+/* ── the reveal ────────────────────────────────────────────────────────────
+   Start states live ONLY in here: opacity 0 and a zero-width rule would be
+   missing content and missing structure without scroll-driven animation
+   support, not a missing flourish. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal {
+      view-timeline: --reveal block;
+      /* travel eased so it settles, fade linear — an eased fade on a scroll
+         timeline reads as uneven */
+      animation:
+        about-rise var(--ease-out) both,
+        about-fade linear both;
+      animation-timeline: --reveal, --reveal;
+      animation-range: cover 8% cover 30%, cover 8% cover 24%;
+    }
+
+    /* The rule draws just ahead of its row's text, so the structure lands
+       first and the content fills it. */
+    .row::before {
+      animation: about-rule var(--ease-out) both;
+      animation-timeline: --reveal;
+      animation-range: cover 5% cover 26%;
+    }
+  }
+}
+
+@keyframes about-rise {
+  from {
+    translate: 0 12px;
+  }
+  to {
+    translate: 0 0;
+  }
+}
+
+@keyframes about-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes about-rule {
+  from {
+    scale: 0 1;
+  }
+  to {
+    scale: 1 1;
+  }
+}

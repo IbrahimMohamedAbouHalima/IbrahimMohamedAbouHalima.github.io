@@ -1,4 +1,5 @@
 import { site } from '@/content/site';
+import styles from './about.module.css';
 
 // Ported from index.html:206-257. Tag typography (.tag/.tag-neutral) and
 // ghost-button typography (.btn/.btn-ghost) reconstructed from the old
@@ -23,17 +24,17 @@ export default function About() {
         <span className="mb-6 block text-[13px] tracking-[0.08em] uppercase text-accent-700">
           About
         </span>
-        <h2 className="text-[32px] leading-[40px] tracking-[-0.015em]">{about.heading}</h2>
+        <h2 className={`${styles.reveal} text-[32px] leading-[40px] tracking-[-0.015em]`}>{about.heading}</h2>
         {about.paragraphs.map((paragraph, i) => (
           <p
             key={i}
-            className="mt-5 max-w-[46ch] text-[15.5px] leading-[26px]"
+            className={`${styles.reveal} mt-5 max-w-[46ch] text-[15.5px] leading-[26px]`}
             style={{ color: 'color-mix(in srgb, var(--color-text) 82%, transparent)' }}
           >
             {paragraph}
           </p>
         ))}
-        <div className="mt-7 flex flex-wrap gap-3">
+        <div className={`${styles.reveal} mt-7 flex flex-wrap gap-3`}>
           {about.links.map((link) => {
             const external = link.href.startsWith('http');
             return (
@@ -61,7 +62,7 @@ export default function About() {
           </p>
           <div className="flex flex-col gap-4">
             {about.skills.map((group) => (
-              <div key={group.title}>
+              <div key={group.title} className={styles.reveal}>
                 <p className="m-0 mb-2 text-[11px] tracking-[0.08em] uppercase text-accent-700">
                   {group.title}
                 </p>
@@ -91,7 +92,7 @@ export default function About() {
             {about.timeline.map((entry) => (
               <div
                 key={entry.role}
-                className="flex items-baseline justify-between gap-6 py-[14px] [border-top:2px_solid_var(--color-divider)]"
+                className={`${styles.reveal} ${styles.row} flex items-baseline justify-between gap-6 py-[14px]`}
               >
                 <p className="text-[15px] leading-[24px]">{entry.role}</p>
                 <p
